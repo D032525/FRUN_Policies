@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<!-- Changes:
+18-Dec-2017 - Dirk Schiwy, D033833
+- Initial version, Dirk Schiwy
+ -->
+<targetsystem desc="BSO_ABAP_CFG - All Checks" id="BSO_ABAP_CFG_ALL" multisql="Yes">
+  <configstore name="ABAP_INSTANCE_PAHI" system_type="ABAP">
+    <checkitem desc="Number of Non Dialog Work Processes 16GB VM" id="CFG.01.VM.16GB" system_type="ABAP">
+      <compliant>NAME = 'rdisp/wp_no_dia' and ( VALUE = '20' )</compliant>
+      <noncompliant>NAME = 'rdisp/wp_no_dia' and ( VALUE = '20' )</noncompliant>
+      <joinstore hierarchy_level="2" name="SAP_ITSAMOperatingSystem">
+        <joincompliant>NAME = 'TotalVisibleMemorySize' and ( round( VALUE / 1024 / 1024) = '16'   ) </joincompliant>
+        <joinnoncompliant>NAME = 'TotalVisibleMemorySize' </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Number of Non Dialog Work Processes 32GB VM" id="CFG.01.VM.32GB" system_type="ABAP">
+      <compliant>NAME = 'rdisp/wp_no_dia' and ( VALUE = '40' )</compliant>
+      <noncompliant>NAME = 'rdisp/wp_no_dia' and ( VALUE = '40' )</noncompliant>
+      <joinstore hierarchy_level="2" name="SAP_ITSAMOperatingSystem">
+        <joincompliant>NAME = 'TotalVisibleMemorySize' and ( round( VALUE / 1024 / 1024) = '32'   ) </joincompliant>
+        <joinnoncompliant>NAME = 'TotalVisibleMemorySize' </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Number of Non Dialog Work Processes 64GB VM" id="CFG.01.VM.64GB" system_type="ABAP">
+      <compliant>NAME = 'rdisp/wp_no_dia' and ( VALUE = '60' )</compliant>
+      <noncompliant>NAME = 'rdisp/wp_no_dia' and ( VALUE = '60' )</noncompliant>
+      <joinstore hierarchy_level="2" name="SAP_ITSAMOperatingSystem">
+        <joincompliant>NAME = 'TotalVisibleMemorySize' and ( round( VALUE / 1024 / 1024) = '64'   ) </joincompliant>
+        <joinnoncompliant>NAME = 'TotalVisibleMemorySize' </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="CUA Buffer Maximum Objects" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'rsdb/cua/max_objects' and VALUE = '10000' </compliant>
+      <noncompliant>NAME = 'rsdb/cua/max_objects' and not (  VALUE = '10000' )</noncompliant>
+    </checkitem>
+    <checkitem desc="ABAP Buffer Size" id="CFG.03.VM.16GB">
+      <compliant>NAME = 'abap/buffersize' and VALUE = '1500000'</compliant>
+      <noncompliant>NAME = 'abap/buffersize' and not ( VALUE = '1500000' )</noncompliant>
+      <joinstore hierarchy_level="2" name="SAP_ITSAMOperatingSystem">
+        <joincompliant>NAME = 'TotalVisibleMemorySize' and   ( round( VALUE / 1024 / 1024) = '16'  ) </joincompliant>
+        <joinnoncompliant>NAME = 'TotalVisibleMemorySize' </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="ABAP Buffer Size" id="CFG.03.VM.32GB">
+      <compliant>NAME = 'abap/buffersize' and VALUE = '3500000' </compliant>
+      <noncompliant>NAME = 'abap/buffersize' and not ( VALUE = '3500000' )</noncompliant>
+      <joinstore hierarchy_level="2" name="SAP_ITSAMOperatingSystem">
+        <joincompliant>NAME = 'TotalVisibleMemorySize' and   ( round( VALUE / 1024 / 1024) = '32'  ) </joincompliant>
+        <joinnoncompliant>NAME = 'TotalVisibleMemorySize' </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="ABAP Buffer Size" id="CFG.03.VM.64GB">
+      <compliant>NAME = 'abap/buffersize' and VALUE = '5000000' </compliant>
+      <noncompliant>NAME = 'abap/buffersize' and not ( VALUE = '5000000' )</noncompliant>
+      <joinstore hierarchy_level="2" name="SAP_ITSAMOperatingSystem">
+        <joincompliant>NAME = 'TotalVisibleMemorySize' and   ( round( VALUE / 1024 / 1024) = '64' ) </joincompliant>
+        <joinnoncompliant>NAME = 'TotalVisibleMemorySize' </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+  </configstore>
+</targetsystem>

@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<!-- Changes:
+23-March-2018 - Dirk Schiwy, D033833
+- Initial version, Dirk Schiwy
+-->
+<targetsystem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" desc="BIO_ABAP_CFG_MON - Monitoring Parameters" id="BIO_ABAP_CFG_MON" multisql="Yes" xsi:schemaLocation="csa_policy.xsd">
+  <!-- Checks for profile parametes -->
+  <configstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+    <checkitem desc="sapstartsrv WS protection webmethod (service/protectedwebmethods)" id="Parameter_1.80.07a">
+      <compliant>NAME = 'service/protectedwebmethods' and VALUE = 'SDEFAULT -J2EEGetProcessList -ReadLogFile -ABAPReadSyslog -ListLogFiles -GetProcessList' </compliant>
+      <noncompliant>NAME = 'service/protectedwebmethods' and not ( VALUE = 'SDEFAULT -J2EEGetProcessList -ReadLogFile -ABAPReadSyslog -ListLogFiles -GetProcessList' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="sapstartsrv WS protection (service/admin_users)" id="Parameter_1.80.07?">
+      <compliant>(
+           NAME = 'service/admin_users' and VALUE = 'sapadm daaadm'
+      		OR
+           NAME = 'service/admin_users' and VALUE = 'daaadm sapadm'
+      		OR
+	   NAME = 'service/admin_users' and VALUE = 'D_WDFBSS\daaadm D_WDFBSS\sapadm'
+          	OR
+           NAME = 'service/admin_users' and VALUE = 'D_WDFBSS\sapadm D_WDFBSS\daaadm'
+      )</compliant>
+      <noncompliant>NAME = 'service/admin_users' and ( VALUE = '')</noncompliant>
+    </checkitem>
+  </configstore>
+</targetsystem>
+<!--
+Notes:
+NAME = 'service/admin_users' and not ( VALUE = 'sapadm daaadm') 
+      	OR
+     NAME = 'service/admin_users' and not ( VALUE = 'daaadm sapadm')
+     	OR
+	  NAME = 'service/admin_users' and not ( VALUE = 'D_WDFBSS\daaadm D_WDFBSS\sapadm')
+      	OR
+		
+      NAME = 'service/admin_users' and not ( VALUE = 'D_WDFBSS\sapadm D_WDFBSS\daaadm') 
+-->

@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<!-- Changes:
+17-Feb-2018 - Dirk Schiwy, D033833
+- Initial version, Dirk Schiwy
+-->
+<targetsystem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" desc="BSM_ABAP_SEC_MIN - Minimum Standard" id="BSM_ABAP_SEC_MIN" multisql="Yes" xsi:schemaLocation="csa_policy.xsd">
+  <!-- Checks for client settings -->
+  <configstore name="CLIENTS" name_extended="" sci_id="">
+    <checkitem desc="Delete unused clients (066)" id="Client_1.10.01b" operator="not_exist:MANDT">
+      <compliant>MANDT='066'</compliant>
+      <noncompliant>MANDT='066'</noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for critical sicf services -->
+  <configstore name="SICF_SERVICES" name_extended="" sci_id="">
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/soap/rfc)" id="ICF_1.80.05a" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'RFC' and URL = '/sap/bc/soap/rfc/' </compliant>
+      <noncompliant>ICF_NAME = 'RFC' and URL = '/sap/bc/soap/rfc/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/webrfc)" id="ICF_1.80.05h" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'WEBRFC' and URL = '/sap/bc/webrfc/' </compliant>
+      <noncompliant>ICF_NAME = 'WEBRFC' and URL = '/sap/bc/webrfc/' </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for security audit log -->
+  <configstore name="AUDIT_CONFIGURATION">
+    <checkitem desc="Default logging mechanism (Security Audit Log enabled)" id="AuditLog_2.70.01c">
+      <compliant>name = 'Enabled' and value = 'Yes'</compliant>
+      <noncompliant>name = 'Enabled'  and not (value = 'Yes')</noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for standard users -->
+  <configstore name="STANDARD_USERS" name_extended="" sci_id="">
+    <checkitem desc="Secure SAP* (SAP* in client 000)" id="Users_1.10.02b" operator="">
+      <compliant>CLIENT = '000' and USERNAME = 'SAP*' and not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' and LOCKED = 'X' </compliant>
+      <noncompliant>CLIENT = '000' and USERNAME = 'SAP*' and not ( not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' and LOCKED = 'X' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure SAP* (SAP* in client 001)" id="Users_1.10.02c" operator="">
+      <compliant>CLIENT = '001' and USERNAME = 'SAP*' and not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' </compliant>
+      <noncompliant>CLIENT = '001' and USERNAME = 'SAP*' and not ( not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure SAP* (SAP* in client 066)" id="Users_1.10.02d" operator="">
+      <compliant>CLIENT = '066' and USERNAME = 'SAP*' and not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' </compliant>
+      <noncompliant>CLIENT = '066' and USERNAME = 'SAP*' and not ( not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure TMSADM (TMSADM in client 000)" id="Users_1.10.03a" operator="">
+      <compliant>CLIENT = '000' and USERNAME = 'TMSADM' and not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' ))</compliant>
+      <noncompliant>CLIENT = '000' and USERNAME = 'TMSADM' and not ( not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure EARLYWATCH, DDIC, and SAPCPIC (EARLYWATCH in 066)" id="Users_1.10.04a" operator="">
+      <compliant>CLIENT = '066' and USERNAME = 'EARLYWATCH' and not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and LOCKED = 'X' </compliant>
+      <noncompliant>CLIENT = '066' and USERNAME = 'EARLYWATCH' and not ( not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and LOCKED = 'X' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure EARLYWATCH, DDIC, and SAPCPIC (DDIC in 000)" id="Users_1.10.04b" operator="">
+      <compliant>CLIENT = '000' and USERNAME = 'DDIC' and not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' </compliant>
+      <noncompliant>CLIENT = '000' and USERNAME = 'DDIC' and not ( not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure EARLYWATCH, DDIC, and SAPCPIC (SAPCPIC in 000)" id="Users_1.10.04c" operator="">
+      <compliant>CLIENT = '000' and USERNAME = 'SAPCPIC' and ( not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' ) and LOCKED = 'X'  and EXISTING = 'X') or ( ( EXISTING = '' ) ) ) </compliant>
+      <noncompliant>CLIENT = '000' and USERNAME = 'SAPCPIC' and not ( not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN'  ) and LOCKED = 'X'  AND EXISTING = 'X' ) ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for password hashes -->
+  <configstore name="USER_PASSWD_HASH_USAGE" name_extended="" sci_id="">
+    <checkitem desc="Ensure usage of strong password hashes only (DIALOG users with BCODE exist)" id="Password_1.20.02b" not_found="positive" operator="">
+      <compliant>USER_TYPE = 'DIALOG'  and BCODE = 'USED'  and NUM_USER = '0' </compliant>
+      <noncompliant>USER_TYPE = 'DIALOG'  and BCODE = 'USED'  and not ( NUM_USER = '0'  ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for system modifiable setting -->
+  <configstore name="GLOBAL" name_extended="" sci_id="">
+    <checkitem desc="System and Client Change options (System modifiable)" id="Change_2.90.02a" operator="">
+      <compliant>NAME = 'GLOBAL_SETTING'  and VALUE &lt;&gt; 'MODIFIABLE' </compliant>
+      <noncompliant>NAME = 'GLOBAL_SETTING'  and not ( VALUE &lt;&gt; 'MODIFIABLE'  ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for authorization profiles -->
+  <configstore name="AUTH_PROFILE_USER" name_extended="" sci_id="">
+    <checkitem desc="Create and document an authorization concept (user with profile SAP_ALL exists)" id="Roles_2.80.01b" operator="">
+      <compliant>PROFILE = 'SAP_ALL' and USERNAME in ('DDIC','SAP*')  and STATUS = 'USER_IS_AUTHORIZED' </compliant>
+      <noncompliant>PROFILE = 'SAP_ALL' and USERNAME not in ('DDIC','SAP*') and  STATUS = 'USER_IS_AUTHORIZED'</noncompliant>
+    </checkitem>
+  </configstore>
+</targetsystem>
