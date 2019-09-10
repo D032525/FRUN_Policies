@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<targetsystem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" desc="BIO_ABAP_CSA_MON - CSA DATA QUALITY FOR MON" id="BIO_ABAP_CSA_MON" multisql="Yes" xsi:schemaLocation="csa_policy.xsd">
+  <!-- Check LICENSE -->
+  <configstore name="LICENSE" name_extended="" sci_id="">
+    <checkitem desc="LICENSE filled" id="LICENSE_FILLED" operator="exist:SID">
+      <compliant>SID='ICD'</compliant>
+      <noncompliant>SID='ICP'</noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Check PSE_CERT -->
+  <configstore name="PSE_CERT" name_extended="" sci_id="">
+    <checkitem desc="PSE_CERT filled" id="PSE_CERT_FILLED" operator="exist:TYPE">
+      <compliant>TYPE = 'CERTIFICATE'</compliant>
+      <noncompliant>TYPE = 'NON'</noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for standard users -->
+  <configstore name="STANDARD_USERS" name_extended="" sci_id="">
+    <checkitem desc="STANDARD_USERS filled" id="STANDARD_USERS" operator="">
+      <compliant>CLIENT = '000' and USERNAME = 'DDIC' and not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' </compliant>
+      <noncompliant>CLIENT = '000' and USERNAME = 'DDIC' and not ( not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for system modifiable setting -->
+  <configstore name="GLOBAL" name_extended="" sci_id="">
+    <checkitem desc="GLOBAL filled" id="GLOBAL_FILLED" operator="">
+      <compliant>NAME = 'GLOBAL_SETTING'  and VALUE &lt;&gt; 'MODIFIABLE' </compliant>
+      <noncompliant>NAME = 'GLOBAL_SETTING'  and not ( VALUE &lt;&gt; 'MODIFIABLE'  ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for client settings -->
+  <configstore name="CLIENTS" name_extended="" sci_id="">
+    <checkitem desc="CLIENTS filled" id="CLIENTS_FILLED" operator="not_exist:MANDT">
+      <compliant>MANDT='000'</compliant>
+      <noncompliant>MANDT='000'</noncompliant>
+    </checkitem>
+  </configstore>
+</targetsystem>

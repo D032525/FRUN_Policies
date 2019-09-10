@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<!-- Changes:
+2018-07-13 D055539 Chris Burkert: initial draft
+ -->
+<targetsystem desc="BIO_ASE_CFG - All Checks" id="BIO_ASECFG_ALL" multisql="Yes">
+  <configstore name="SYB_PARAMETER">
+    <checkitem desc="net password encryption reqd" id="CFG.ASE.01">
+      <compliant>NAME = 'net password encryption reqd' and VALUE = '2'</compliant>
+      <complianttext>https://wiki.wdf.sap.corp/wiki/x/H6C-R</complianttext>
+      <noncompliant>NAME = 'net password encryption reqd' and VALUE != '2'</noncompliant>
+      <noncomplianttext>https://wiki.wdf.sap.corp/wiki/x/H6C-R</noncomplianttext>
+    </checkitem>
+    <checkitem desc="number of user connections" id="CFG.ASE.02">
+      <compliant>NAME = 'number of user connections' and VALUE &gt;= 200 </compliant>
+      <noncompliant>NAME = 'number of user connections' and VALUE &lt; 200</noncompliant>
+    </checkitem>
+  </configstore>
+</targetsystem>

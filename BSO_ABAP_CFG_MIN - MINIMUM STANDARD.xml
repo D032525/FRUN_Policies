@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<!-- Changes:
+17-Feb-2018 - Dirk Schiwy, D033833
+- Initial version, Dirk Schiwy
+-->
+<targetsystem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" desc="BSO_ABAP_CFG_MIN - Minimum Standard" id="BSO_ABAP_CFG_MIN" multisql="Yes" xsi:schemaLocation="csa_policy.xsd">
+  <!-- Checks for profile parametes -->
+  <configstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+    <checkitem desc="SAP* secured (login/no_automatic_user_sapstar)" id="Parameter_1.10.02a">
+      <compliant>NAME = 'login/no_automatic_user_sapstar' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'login/no_automatic_user_sapstar' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Audit Log enabled (rsau/enable) " id="Parameter_2.80.01a">
+      <compliant>NAME = 'rsau/enable' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'rsau/enable' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+  </configstore>
+</targetsystem>
