@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Intention:
+Check OS und Patch version
+ -->
+<targetsystem desc="BSO_OS_VER" id="BSO_OS_VER" multisql="Yes">
+  <configstore name="SAP_ITSAMOperatingSystem">
+    <checkitem desc="operating system check" id="1.0.0.0">
+      <compliant>name = 'PPMSRelease' and VALUE = 'SLES11' or VALUE = 'SLES12'</compliant>
+      <complianttext/>
+      <noncompliant>name = 'PPMSRelease' and not (VALUE =  'SLES11' or VALUE = 'SLES12')</noncompliant>
+      <noncomplianttext/>
+	   </checkitem>
+	     <checkitem desc="os_ver_patch check" id="1.1.0.0">
+      <compliant>name = 'Caption' and VALUE = 'SUSE Linux Enterprise Server 11 SP4' or VALUE = 'SUSE Linux Enterprise Server 12 SP3'</compliant>
+      <complianttext/>
+      <noncompliant>name = 'Caption' and not (VALUE =  'SUSE Linux Enterprise Server 11 SP4' or VALUE = 'SUSE Linux Enterprise Server 12 SP3')</noncompliant>
+      <noncomplianttext/>
+       </checkitem>
+  </configstore>
+</targetsystem>
