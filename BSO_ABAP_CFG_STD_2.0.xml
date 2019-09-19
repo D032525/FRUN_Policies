@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Changes:
+18-Dec-2017 - Dirk Schiwy, D033833
+- Initial version, Dirk Schiwy
+14-Nov-2018 - Christoph Lang, D032525
+- Extending initial version to check for a SAP IT "standard" configuration
+23-Nov-2018 modifying hard number values to range where applicable
+29-Nov-2018 added OS check
+19-Nov-2019 adopted some checks due to feedback from TLO's and after checking with SGS
+ -->
+<!-- 0001 / MODIFIED NUMBER VALUES TO RANGE -->
+<targetsystem desc="BSO_ABAP_CFG_Standard" id="BSO_ABAP_CFG_STD" multisql="Yes">
+<!-- Performance parameters check deactivated due to adoption required
+  <configstore name="ABAP_INSTANCE_PAHI" system_type="ABAP">
+    <checkitem desc="Number of Non Dialog Work Processes 16GB VM" id="CFG.01.VM.16GB" system_type="ABAP">
+      <compliant>NAME = 'rdisp/wp_no_dia' and ( VALUE = '20' )</compliant>
+      <noncompliant>NAME = 'rdisp/wp_no_dia' and ( VALUE = '20' )</noncompliant>
+      <joinstore hierarchy_level="2" name="SAP_ITSAMOperatingSystem">
+        <joincompliant>NAME = 'TotalVisibleMemorySize' and ( round( VALUE / 1024 / 1024) = '16'   ) </joincompliant>
+        <joinnoncompliant>NAME = 'TotalVisibleMemorySize' </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Number of Non Dialog Work Processes 32GB VM" id="CFG.01.VM.32GB" system_type="ABAP">
+      <compliant>NAME = 'rdisp/wp_no_dia' and ( VALUE = '40' )</compliant>
+      <noncompliant>NAME = 'rdisp/wp_no_dia' and ( VALUE = '40' )</noncompliant>
+      <joinstore hierarchy_level="2" name="SAP_ITSAMOperatingSystem">
+        <joincompliant>NAME = 'TotalVisibleMemorySize' and ( round( VALUE / 1024 / 1024) = '32'   ) </joincompliant>
+        <joinnoncompliant>NAME = 'TotalVisibleMemorySize' </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Number of Non Dialog Work Processes 64GB VM" id="CFG.01.VM.64GB" system_type="ABAP">
+      <compliant>NAME = 'rdisp/wp_no_dia' and ( VALUE = '60' )</compliant>
+      <noncompliant>NAME = 'rdisp/wp_no_dia' and ( VALUE = '60' )</noncompliant>
+      <joinstore hierarchy_level="2" name="SAP_ITSAMOperatingSystem">
+        <joincompliant>NAME = 'TotalVisibleMemorySize' and ( round( VALUE / 1024 / 1024) = '64'   ) </joincompliant>
+        <joinnoncompliant>NAME = 'TotalVisibleMemorySize' </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="CUA Buffer Maximum Objects" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'rsdb/cua/max_objects' and VALUE &gt;= '10000' </compliant>
+      <noncompliant>NAME = 'rsdb/cua/max_objects' and not (  VALUE &gt;= '10000' )</noncompliant>
+    </checkitem>
+    <checkitem desc="ABAP Buffer Size" id="CFG.03.VM.16GB">
+      <compliant>NAME = 'abap/buffersize' and VALUE = '1500000'</compliant>
+      <noncompliant>NAME = 'abap/buffersize' and not ( VALUE = '1500000' )</noncompliant>
+      <joinstore hierarchy_level="2" name="SAP_ITSAMOperatingSystem">
+        <joincompliant>NAME = 'TotalVisibleMemorySize' and   ( round( VALUE / 1024 / 1024) = '16'  ) </joincompliant>
+        <joinnoncompliant>NAME = 'TotalVisibleMemorySize' </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="ABAP Buffer Size" id="CFG.03.VM.32GB">
+      <compliant>NAME = 'abap/buffersize' and VALUE = '3500000' </compliant>
+      <noncompliant>NAME = 'abap/buffersize' and not ( VALUE = '3500000' )</noncompliant>
+      <joinstore hierarchy_level="2" name="SAP_ITSAMOperatingSystem">
+        <joincompliant>NAME = 'TotalVisibleMemorySize' and   ( round( VALUE / 1024 / 1024) = '32'  ) </joincompliant>
+        <joinnoncompliant>NAME = 'TotalVisibleMemorySize' </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="ABAP Buffer Size" id="CFG.03.VM.64GB">
+      <compliant>NAME = 'abap/buffersize' and VALUE = '5000000' </compliant>
+      <noncompliant>NAME = 'abap/buffersize' and not ( VALUE = '5000000' )</noncompliant>
+      <joinstore hierarchy_level="2" name="SAP_ITSAMOperatingSystem">
+        <joincompliant>NAME = 'TotalVisibleMemorySize' and   ( round( VALUE / 1024 / 1024) = '64' ) </joincompliant>
+        <joinnoncompliant>NAME = 'TotalVisibleMemorySize' </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="max_comm_entries" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'rdisp/max_comm_entries' and VALUE &gt;= '2000' </compliant>
+      <noncompliant>NAME = 'rdisp/max_comm_entries' and not (  VALUE &gt;= '2000' )</noncompliant>
+    </checkitem>
+    <checkitem desc="gw/max_conn" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'gw/max_conn' and VALUE &gt;= '2000' </compliant>
+      <noncompliant>NAME = 'gw/max_conn' and not (  VALUE &gt;= '2000' )</noncompliant>
+    </checkitem>
+    <checkitem desc="gw/max_overflow_size" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'gw/max_overflow_size' and VALUE &gt;= '25000000' </compliant>
+      <noncompliant>NAME = 'gw/max_overflow_size' and not (  VALUE &gt;= '25000000' )</noncompliant>
+    </checkitem>
+    <checkitem desc="gw/max_sys" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'gw/max_sys' and VALUE &gt;= '2000' </compliant>
+      <noncompliant>NAME = 'gw/max_sys' and not (  VALUE &gt;= '2000' )</noncompliant>
+    </checkitem>
+    <checkitem desc="rdisp/tm_max_no" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'rdisp/tm_max_no' and VALUE &gt;= '2000' </compliant>
+      <noncompliant>NAME = 'rdisp/tm_max_no' and not (  VALUE &gt;= '2000' )</noncompliant>
+    </checkitem>
+    <checkitem desc="rdisp/elem_per_queue" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'rdisp/elem_per_queue' and VALUE &gt;= '4000' </compliant>
+      <noncompliant>NAME = 'rdisp/elem_per_queue' and not (  VALUE &gt;= '4000' )</noncompliant>
+    </checkitem>
+    <checkitem desc="rdisp/accept_remote_trace_level" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'rdisp/accept_remote_trace_level' and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'rdisp/accept_remote_trace_level' and not (  VALUE = '0' )</noncompliant>
+    </checkitem>
+    <checkitem desc="gw/accept_remote_trace_level" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'gw/accept_remote_trace_level' and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'gw/accept_remote_trace_level' and not (  VALUE = '0' )</noncompliant>
+    </checkitem>
+    <checkitem desc="icm/accept_remote_trace_level" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'icm/accept_remote_trace_level' and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'icm/accept_remote_trace_level' and not (  VALUE = '0' )</noncompliant>
+    </checkitem>
+    <checkitem desc="rdisp/no_statistic" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'rdisp/no_statistic' and VALUE = 'PLUGIN' </compliant>
+      <noncompliant>NAME = 'rdisp/no_statistic' and not (  VALUE = 'PLUGIN' )</noncompliant>
+    </checkitem>
+    <checkitem desc="icm/max_conn" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'icm/max_conn' and VALUE = '750' </compliant>
+      <noncompliant>NAME = 'icm/max_conn' and not (  VALUE = '750' )</noncompliant>
+    </checkitem>
+    <checkitem desc="icm/max_threads" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'icm/max_threads' and VALUE = '75' </compliant>
+      <noncompliant>NAME = 'icm/max_threads' and not (  VALUE = '75' )</noncompliant>
+    </checkitem>
+    <checkitem desc="zcsa/system_language" id="CFG.02.VM.ALL">
+      <compliant>NAME = 'zcsa/system_language' and VALUE = 'E' </compliant>
+      <noncompliant>NAME = 'zcsa/system_language' and not (  VALUE = 'E' )</noncompliant>
+    </checkitem>
+-->
+    <!-- Changes:
+<configstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+ -->
+ <configstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+    <checkitem desc="Secure SAP* (login/no_automatic_user_sapstar)" id="1.10.02a">
+      <compliant>NAME = 'login/no_automatic_user_sapstar' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'login/no_automatic_user_sapstar' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_lng)" id="1.20.01a">
+      <compliant>NAME = 'login/min_password_lng' and VALUE &gt;= '8' </compliant>
+      <noncompliant>NAME = 'login/min_password_lng' and not ( VALUE &gt;= '8' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_letters)" id="1.20.01b">
+      <compliant>NAME = 'login/min_password_letters' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_letters' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_digits)" id="1.20.01c">
+      <compliant>NAME = 'login/min_password_digits' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_digits' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_lowercase)" id="1.20.01d">
+      <compliant>NAME = 'login/min_password_lowercase' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_lowercase' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_uppercase)" id="1.20.01e">
+      <compliant>NAME = 'login/min_password_uppercase' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_uppercase' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_expiration_time)" id="1.20.01f">
+      <compliant>NAME = 'login/password_expiration_time' and replace(VALUE, ' (not 0)' , '9999') between 1 and 182</compliant>
+      <noncompliant>NAME = 'login/password_expiration_time' and not ( replace(VALUE, ' (not 0)' , '9999') between 1 and 182 ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_history_size)" id="1.20.01g">
+      <compliant>NAME = 'login/password_history_size' and VALUE &gt;= '5' </compliant>
+      <noncompliant>NAME = 'login/password_history_size' and not ( VALUE &gt;= '5' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_change_waittime)" id="1.20.01h">
+      <compliant>NAME = 'login/password_change_waittime' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/password_change_waittime' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_compliance_to_current_policy)" id="1.20.01i">
+      <compliant>NAME = 'login/password_compliance_to_current_policy' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'login/password_compliance_to_current_policy' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Ensure usage of strong password hashes only (login/password_downwards_compatibility)" id="1.20.02a">
+      <compliant>NAME = 'login/password_downwards_compatibility' and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'login/password_downwards_compatibility' and not ( VALUE = '0' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure SNC from SAP GUI to SAP system (snc/enable)" id="1.50.02a">
+      <compliant>NAME = 'snc/enable' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'snc/enable' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure SNC from SAP GUI to SAP system (snc/data_protection/max)" id="1.50.02b">
+      <compliant>NAME = 'snc/data_protection/max' and VALUE = '3' </compliant>
+      <noncompliant>NAME = 'snc/data_protection/max' and not ( VALUE = '3' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure SNC from SAP GUI to SAP system (snc/data_protection/min)" id="1.50.02c">
+      <compliant>NAME = 'snc/data_protection/min' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'snc/data_protection/min' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure SNC from SAP GUI to SAP system (snc/data_protection/use)" id="1.50.02d">
+      <compliant>NAME = 'snc/data_protection/use' and VALUE = '3' </compliant>
+      <noncompliant>NAME = 'snc/data_protection/use' and not( VALUE = '3' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Logon Ticket Issuing (login/accept_sso2_ticket)" id="1.50.03a">
+      <compliant>NAME = 'login/accept_sso2_ticket' and VALUE = '0' or VALUE = '1' </compliant>
+      <noncompliant>NAME = 'login/accept_sso2_ticket' and not ( VALUE = '0' or VALUE = '1' ) </noncompliant>
+<!-- '1' also allowed as recommended in Security Guide -->
+    </checkitem>
+    <checkitem desc="Logon Ticket Issuing (login/create_sso2_ticket)" id="1.50.03b">
+      <compliant>NAME = 'login/create_sso2_ticket' and ( VALUE = '0' or VALUE = '3' )</compliant>
+      <noncompliant>NAME = 'login/create_sso2_ticket' and not ( ( VALUE = '0' or VALUE = '3' ) ) </noncompliant>
+<!--any value between 0 and 3 allowed as  'login/ticket_only_to_host' is checked for VALUE = '1' to reflect connectivity issues between ABAP and JAVA double stack -->
+  </checkitem>
+    <checkitem desc="Logon Ticket Issuing (login/ticket_only_to_host)" id="1.50.03c">
+      <compliant>NAME = 'login/ticket_only_to_host' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'login/ticket_only_to_host' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC authority check" id="1.60.02a">
+      <compliant>NAME = 'auth/rfc_authority_check' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'auth/rfc_authority_check' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC gateway hardening (gw/acl_mode)" id="1.80.02a">
+      <compliant>NAME = 'gw/acl_mode' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'gw/acl_mode' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC gateway hardening (gw/reg_no_conn_info)" id="1.80.02b">
+      <compliant>NAME = 'gw/reg_no_conn_info' and VALUE = '129' </compliant>
+      <noncompliant>NAME = 'gw/reg_no_conn_info' and not ( VALUE = '129' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC gateway hardening (gw/sec_info)" id="1.80.02c">
+      <compliant>NAME = 'gw/sec_info' and VALUE = '.*[Gg]lobal.*.secinfo.*' </compliant>
+      <noncompliant>NAME = 'gw/sec_info' and not ( VALUE = '.*[Gg]lobal.*.secinfo.*' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Message server hardening (ms/monitor)" id="1.80.03b">
+      <compliant>NAME = 'ms/monitor' and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'ms/monitor' and not ( VALUE = '0' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Message server hardening (ms/acl_info)" id="1.80.03c">
+      <compliant>NAME = 'ms/acl_info' and VALUE = '.*ms_acl_info' </compliant>
+      <noncompliant>NAME = 'ms/acl_info' and not ( VALUE = '.*ms_acl_info' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure access to SAP Management Console (service/protectedwebmethods)" id="1.80.07a">
+      <compliant>NAME = 'service/protectedwebmethods' and VALUE = 'SDEFAULT' </compliant>
+      <noncompliant>NAME = 'service/protectedwebmethods' and not ( VALUE = 'SDEFAULT' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Enforcement of HTTPS (icm/HTTP/redirect)" id="2.30.01a">
+      <compliant>NAME = 'icm/HTTP/redirect_0' and VALUE = '.*[Hh][Tt][Tt][Pp][Ss].*' </compliant>
+      <noncompliant>NAME = 'icm/HTTP/redirect_0' and not ( VALUE = '.*[Hh][Tt][Tt][Pp][Ss].*' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure session handling (icf/user_recheck)" id="2.60.01a">
+      <compliant>NAME = 'icf/user_recheck' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'icf/user_recheck' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure cookie handling (login/ticket_only_by_https)" id="2.60.02a">
+      <compliant>NAME = 'login/ticket_only_by_https' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'login/ticket_only_by_https' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure cookie handling (icf/set_HTTPonly_flag_on_cookies)" id="2.60.02b">
+      <compliant>NAME = 'icf/set_HTTPonly_flag_on_cookies' and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'icf/set_HTTPonly_flag_on_cookies' and not ( VALUE = '0' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Default logging mechanism (gw/logging)" id="2.70.01a">
+      <compliant>NAME = 'gw/logging' and VALUE = 'ACTION=SsPXM LOGFILE=.*gw_log.*' </compliant>
+      <noncompliant>NAME = 'gw/logging' and not ( VALUE = 'ACTION=SsPXM LOGFILE=.*gw_log.*' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Default logging mechanism (icm/HTTP/logging)" id="2.70.01b">
+      <compliant>NAME = 'icm/HTTP/logging_0' </compliant>
+      <noncompliant>NAME = 'icm/HTTP/logging_0' </noncompliant>
+<!--checking if parameter is set but format of logging is irrelevant-->
+    </checkitem>
+    <checkitem desc="Activate table logging (rec/client)" id="2.70.02a">
+      <compliant>NAME = 'rec/client' and ( VALUE = '000' or VALUE = 'ALL' )</compliant>
+      <noncompliant>NAME = 'rec/client' and not ( ( VALUE = '000' or VALUE = 'ALL' ) ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Create and document an authorization concept (rsau/enable) " id="2.80.01a">
+      <compliant>NAME = 'rsau/enable' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'rsau/enable' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (login/min_password_diff)" id="2.90.01a">
+      <compliant>NAME = 'login/min_password_diff' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_diff' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (login/min_password_specials)" id="2.90.01b">
+      <compliant>NAME = 'login/min_password_specials' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_specials' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (login/password_max_idle_initial)" id="2.90.01c">
+      <compliant>NAME = 'login/password_max_idle_initial' and rtrim(VALUE, ' =willbestbyABAPTC') between 1 and 7</compliant>
+      <noncompliant>NAME = 'login/password_max_idle_initial' and not ( rtrim(VALUE, ' =willbestbyABAPTC') between 1 and 7 ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (login/password_max_idle_productive)" id="2.90.01d">
+      <compliant>NAME = 'login/password_max_idle_productive' and VALUE between 1 and 90</compliant>
+      <noncompliant>NAME = 'login/password_max_idle_productive' and not ( VALUE between 1 and 90 ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (login/fails_to_session_end)" id="2.90.01e">
+      <compliant>NAME = 'login/fails_to_session_end' and VALUE = '3' </compliant>
+      <noncompliant>NAME = 'login/fails_to_session_end' and not ( VALUE = '3' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (login/fails_to_user_lock)" id="2.90.01f">
+      <compliant>NAME = 'login/fails_to_user_lock' and VALUE = '3' </compliant>
+      <noncompliant>NAME = 'login/fails_to_user_lock' and not ( VALUE = '3' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (login/failed_user_auto_unlock)" id="2.90.01g">
+      <compliant>NAME = 'login/failed_user_auto_unlock' and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'login/failed_user_auto_unlock' and not ( VALUE = '0' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (is/HTTP/show_detailed_errors)" id="2.90.01h">
+      <compliant>NAME = 'is/HTTP/show_detailed_errors' and VALUE = '[Ff][Aa][Ll][Ss][Ee]' </compliant>
+      <noncompliant>NAME = 'is/HTTP/show_detailed_errors' and not ( VALUE = '[Ff][Aa][Ll][Ss][Ee]' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (is/HTTP/show_server_header)" id="2.90.01i">
+      <compliant>NAME = 'is/HTTP/show_server_header' and VALUE = '[Ff][Aa][Ll][Ss][Ee]' </compliant>
+      <noncompliant>NAME = 'is/HTTP/show_server_header' and not ( VALUE = '[Ff][Aa][Ll][Ss][Ee]' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (auth/object_disabling_active)" id="2.90.01j">
+      <compliant>NAME = 'auth/object_disabling_active' and VALUE = 'N' </compliant>
+      <noncompliant>NAME = 'auth/object_disabling_active' and not ( VALUE = 'N' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (ssl/ciphersuites)" id="2.90.01k">
+      <compliant>NAME = 'ssl/ciphersuites' and VALUE = '135:HIGH:!eRC4:!eNULL:!aNULL:!mMD5' </compliant>
+      <noncompliant>NAME = 'ssl/ciphersuites' and not ( VALUE = '135:HIGH:!eRC4:!eNULL:!aNULL:!mMD5' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (ssl/client_ciphersuites)" id="2.90.01l">
+      <compliant>NAME = 'ssl/client_ciphersuites' and VALUE = '144:HIGH:!eRC4:!eNULL:!aNULL:!mMD5' </compliant>
+      <noncompliant>NAME = 'ssl/client_ciphersuites' and not ( VALUE = '144:HIGH:!eRC4:!eNULL:!aNULL:!mMD5' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (system/secure_communication)" id="2.90.01m">
+      <compliant>NAME = 'system/secure_communication' and VALUE = 'ON' </compliant>
+      <noncompliant>NAME = 'system/secure_communication' and not ( VALUE = 'ON' ) </noncompliant>
+    </checkitem>
+ <!--Check deactivated as some systems do not come up any more and parameter is optional
+ <checkitem desc="Set profile parameters (ixml/dtd_restriction)" id="2.90.01n">
+      <compliant>NAME = 'ixml/dtd_restriction' and VALUE = 'prohibited' </compliant>
+      <noncompliant>NAME = 'ixml/dtd_restriction' and not ( VALUE = 'prohibited' ) </noncompliant>
+    </checkitem>
+-->
+    <checkitem desc="RFC gateway hardening (gw/reg_info)" id="2.90.03a">
+      <compliant>NAME = 'gw/reg_info' and VALUE = '.*[Gg]lobal.*.reginfo.*' </compliant>
+      <noncompliant>NAME = 'gw/reg_info' and not ( VALUE = '.*[Gg]lobal.*.reginfo.*' ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <configstore name="SAP_ITSAMOperatingSystem">
+    <checkitem desc="operating system check" id="1.0.0.0">
+      <compliant>name = 'PPMSRelease' and VALUE = 'SLES11' or VALUE = 'SLES12'</compliant>
+      <noncompliant>name = 'PPMSRelease' and not (VALUE =  'SLES11' or VALUE = 'SLES12')</noncompliant>
+    </checkitem>
+  </configstore>
+</targetsystem>
