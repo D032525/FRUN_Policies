@@ -11,9 +11,9 @@ Check OS und Patch version
       <noncomplianttext/>
 	   </checkitem>
 	     <checkitem desc="os_ver_patch check" id="1.1.0.0">
-      <compliant>name = 'Caption' and VALUE = 'SUSE Linux Enterprise Server 11 SP4' or VALUE = 'SUSE Linux Enterprise Server 12 SP3'</compliant>
+      <compliant>name = 'Caption' and VALUE = 'SUSE Linux Enterprise Server 11 SP4' or VALUE = 'SUSE Linux Enterprise Server 12 SP3' or VALUE = 'SUSE Linux Enterprise Server 12 SP4'</compliant>
       <complianttext/>
-      <noncompliant>name = 'Caption' and not (VALUE =  'SUSE Linux Enterprise Server 11 SP4' or VALUE = 'SUSE Linux Enterprise Server 12 SP3')</noncompliant>
+      <noncompliant>name = 'Caption' and not (VALUE =  'SUSE Linux Enterprise Server 11 SP4' or VALUE = 'SUSE Linux Enterprise Server 12 SP3' or VALUE = 'SUSE Linux Enterprise Server 12 SP4')</noncompliant>
       <noncomplianttext/>
        </checkitem>
   </configstore>
