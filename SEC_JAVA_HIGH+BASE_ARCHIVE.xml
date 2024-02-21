@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Policy Validity: FRUN 2.00 FP03
+  14 April 2022 (Vaibhaw) - Updated SCI_ID for checkitem# 2.60.01a, 2.60.01c, 2.60.01d from blank to S00084
+  -->
+<targetsystem desc="SEC_JAVA_HIGH+BASE" id="SEC_JAVA_HIGH+BASE" multisql="Yes" version="0000">
+  <!-- Checks for Software Components deactivated 
+  <configstore name="COMP_LEVEL" name_extended="" system_type="JAVA">
+    <checkitem desc="Precheck: LM-TOOLS exists" id="0.00.01" operator="exist:COMPONENT">
+      <compliant>COMPONENT = 'LM-TOOLS' </compliant>
+      <noncompliant>COMPONENT = 'LM-TOOLS' </noncompliant>
+    </checkitem>
+  </configstore> -->
+  <!-- 
+  BASELINE Checks 
+  -->
+  <!-- Checks for default users -->
+  <configstore name="Guest" name_extended="sapUserProperties:" sci_id="S00222">
+    <checkitem desc="Secure default users (Guest locked)" id="1.10.01a" not_found="positive" operator="">
+      <compliant>ID = 'USER.PRIVATE_DATASOURCE.un:Guest' and IS_LOCKED = 'true'</compliant>
+      <noncompliant>ID = 'USER.PRIVATE_DATASOURCE.un:Guest' and not ( IS_LOCKED = 'true' )</noncompliant>
+    </checkitem>
+  </configstore>
+  <configstore name="J2EE_GUEST" name_extended="sapUserProperties:" sci_id="S00223">
+    <checkitem desc="Secure default users (J2EE_GUEST locked)" id="1.10.01b" not_found="positive" operator="">
+      <compliant>ID = 'USER.PRIVATE_DATASOURCE.un:J2EE_GUEST' and IS_LOCKED = 'true'</compliant>
+      <noncompliant>ID = 'USER.PRIVATE_DATASOURCE.un:J2EE_GUEST' and not ( IS_LOCKED = 'true' )</noncompliant>
+    </checkitem>
+  </configstore>
+  <configstore name="Administrator" name_extended="sapUserProperties:" sci_id="S00235">
+    <checkitem desc="Secure default users (Administrator locked)" id="1.10.01c" not_found="positive" operator="">
+      <compliant>ID = 'USER.PRIVATE_DATASOURCE.un:Administrator' and IS_LOCKED = 'true'</compliant>
+      <noncompliant>ID = 'USER.PRIVATE_DATASOURCE.un:Administrator' and not ( IS_LOCKED = 'true' )</noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for UME properties -->
+  <configstore name="com.sap.security.core.ume.service" name_extended="" sci_id="S00084">
+    <checkitem desc="Configure a compliant password policy (min_length)" id="1.20.01a" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.password_min_length'  and lpad(VALUE, 3, '0') &gt;= '015' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.password_min_length'  and not ( lpad(VALUE, 3, '0') &gt;= '015' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (alpha_numeric_required)" id="1.20.01b" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.password_alpha_numeric_required'  and lpad(VALUE, 3, '0') &gt;= '001' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.password_alpha_numeric_required'  and not ( lpad(VALUE, 3, '0') &gt;= '001'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (mix_case_required)" id="1.20.01c" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.password_mix_case_required'  and lpad(VALUE, 3, '0') &gt;= '001' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.password_mix_case_required'  and not ( lpad(VALUE, 3, '0') &gt;= '001'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (expire_days)" id="1.20.01d" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.password_expire_days'  and lpad(VALUE, 4, '0') between '0001' and '090'</compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.password_expire_days'  and not ( lpad(VALUE, 4, '0') between '0001' and '090' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (history)" id="1.20.01e" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.password_history'  and lpad(VALUE, 3, '0') &gt;= '015' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.password_history'  and not ( lpad(VALUE, 3, '0') &gt;= '015'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (enforce_policy_at_logon)" id="1.20.01f" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.enforce_policy_at_logon'  and VALUE = 'true' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.enforce_policy_at_logon'  and VALUE != 'true'  </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (ume.logon.security_policy.password_special_char_required)" id="1.20.01g" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.password_special_char_required'  and VALUE &gt; '0' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.password_special_char_required' and NOT VALUE &gt; '0' </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (Max Password idle time)" id="1.20.01h" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.password_max_idle_time'  and lpad(VALUE, 4, '0') &lt;= '0090' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.password_max_idle_time' and not ( lpad(VALUE, 4, '0') &lt;= '0090'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (ume.logon.security_policy.lock_after_invalid_attempts)" id="1.20.01i" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.lock_after_invalid_attempts'  and VALUE &lt;= '6' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.lock_after_invalid_attempts'  and not ( VALUE &lt;= '6'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (ume.logon.security_policy.auto_unlock_time)" id="1.20.01j" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.auto_unlock_time'  and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.auto_unlock_time'  and VALUE != '0' </noncompliant>
+    </checkitem>
+    <!--
+    <checkitem desc="Configure a compliant password policy (ume.logon.security_policy.password_special_char_required)" id="1.20.01k" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.password_special_char_required'  and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.password_special_char_required'  and VALUE != '1' </noncompliant>
+    </checkitem>
+    -->
+  </configstore>
+  <configstore name="Parameters" sci_id="S00165">
+    <checkitem desc="Message Server hardening (ms/monitor)" id="1.80.03a" operator="">
+      <compliant>NAME = 'ms/monitor'  and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'ms/monitor'  and not ( VALUE = '0'  ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for servlet_jsp service -->
+  <configstore name="servlet_jsp" name_extended="" sci_id="">
+    <checkitem desc="Disable invoker servlet" id="1.80.05a" operator="">
+      <compliant>NAME = 'EnableInvokerServletGlobally'  and VALUE = 'false' </compliant>
+      <noncompliant>NAME = 'EnableInvokerServletGlobally'  and not ( VALUE = 'false'  ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- 
+	High Level Checks
+	-->
+  <configstore name="com.sap.security.core.ume.service" name_extended="" sci_id="">
+    <checkitem desc="Logon Ticket Issuing (enforce_secure_cookie)" id="2.30.03a" operator="">
+      <compliant>NAME = 'ume.logon.security.enforce_secure_cookie'  and VALUE = 'true' </compliant>
+      <noncompliant>NAME = 'ume.logon.security.enforce_secure_cookie'  and not ( VALUE = 'true'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Logon Ticket Issuing (httponlycookie)" id="2.30.03b" operator="">
+      <compliant>NAME = 'ume.logon.httponlycookie'  and VALUE = 'true' </compliant>
+      <noncompliant>NAME = 'ume.logon.httponlycookie'  and not ( VALUE = 'true'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Logon Ticket Issuing (relax_domain.level)" id="2.30.03c" operator="">
+      <compliant>NAME = 'ume.logon.security.relax_domain.level'  and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'ume.logon.security.relax_domain.level'  and not ( VALUE = '0'  ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for http service -->
+  <configstore name="http" name_extended="" sci_id="S00084">
+    <checkitem desc="Secure session handling (SystemCookiesDataProtection)" id="2.60.01a" operator="">
+      <compliant>NAME= 'SystemCookiesDataProtection'  and VALUE = 'true' </compliant>
+      <noncompliant>NAME= 'SystemCookiesDataProtection'  and VALUE != 'true'  </noncompliant>
+    </checkitem>
+  </configstore>
+  <configstore name="servlet_jsp" name_extended="" sci_id="">
+    <checkitem desc="Secure session handling (SessionIdRegenerationEnabled)" id="2.60.01b" operator="">
+      <compliant>NAME = 'SessionIdRegenerationEnabled'  and VALUE = 'true' </compliant>
+      <noncompliant>NAME = 'SessionIdRegenerationEnabled'  and VALUE != 'true'   </noncompliant>
+    </checkitem>
+  </configstore>
+  <configstore name="http" name_extended="" sci_id="S00084">
+    <checkitem desc="Secure session handling (SystemCookiesHTTPSProtection)" id="2.60.01c" operator="">
+      <compliant>NAME= 'SystemCookiesHTTPSProtection'  and VALUE = 'true' </compliant>
+      <noncompliant>NAME= 'SystemCookiesHTTPSProtection'  and VALUE != 'true'   </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure session handling (SecuritySessionIDHTTPSProtection)" id="2.60.01d" operator="">
+      <compliant>NAME= 'SecuritySessionIDHTTPSProtection'  and VALUE = 'true' </compliant>
+      <noncompliant>NAME= 'SecuritySessionIDHTTPSProtection'  and VALUE != 'true' </noncompliant>
+    </checkitem>
+  </configstore>
+  <configstore name="com.sap.security.core.ume.service" name_extended="" sci_id="">
+    <checkitem desc="Default logging mechanism (ume.secaudit.log_actor)" id="2.70.01a" operator="">
+      <compliant>NAME = 'ume.secaudit.log_actor'  and VALUE = 'true' </compliant>
+      <noncompliant>NAME = 'ume.secaudit.log_actor'  and not ( VALUE = 'true'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Default logging mechanism (ume.logon.security_policy.log_client_hostaddress)" id="2.70.01b" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.log_client_hostaddress'  and VALUE = 'true' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.log_client_hostaddress'  and not ( VALUE = 'true'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set parameters (password_special_char_required)" id="2.90.01a" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.password_special_char_required'  and lpad(VALUE, 3, '0') &gt;= '001' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.password_special_char_required'  and not lpad(VALUE, 3, '0') &gt;= '001'   </noncompliant>
+    </checkitem>
+    <checkitem desc="Set parameters (password_max_idle_time)" id="2.90.01b" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.password_max_idle_time'  and lpad(VALUE, 4, '0') &lt;= '0090' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.password_max_idle_time'  and not ( lpad(VALUE, 4, '0') &lt;= '0090'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set parameters (lock_after_invalid_attempts)" id="2.90.01c" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.lock_after_invalid_attempts'  and lpad(VALUE, 3, '0') &lt;= '003' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.lock_after_invalid_attempts'  and not ( lpad(VALUE, 3, '0') &lt;= '003'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set parameters (auto_unlock_time)" id="2.90.01d" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.auto_unlock_time'  and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.auto_unlock_time'  and not ( VALUE = '0'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set parameters (oldpass_in_newpass_allowed)" id="2.90.01e" operator="">
+      <compliant>NAME = 'ume.logon.security_policy.oldpass_in_newpass_allowed'  and VALUE = 'false' </compliant>
+      <noncompliant>NAME = 'ume.logon.security_policy.oldpass_in_newpass_allowed'  and not ( VALUE = 'false'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set parameters (userpwd_automatic_logon)" id="2.90.01f" operator="">
+      <compliant>NAME = 'ume.logon.userpwd_automatic_logon'  and VALUE = 'false' </compliant>
+      <noncompliant>NAME = 'ume.logon.userpwd_automatic_logon'  and not ( VALUE = 'false'  ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <configstore name="Parameters" sci_id="S00165">
+    <checkitem desc="Set parameters (ssl/ciphersuites)" id="2.90.01g" operator="">
+      <compliant>NAME = 'ssl/ciphersuites' and VALUE like '545%'</compliant>
+      <noncompliant>NAME = 'ssl/ciphersuites' and NOT VALUE like '545%'</noncompliant>
+    </checkitem>
+    <checkitem desc="Client Ciphersuites Parameter" id="2.90.01h">
+      <compliant>NAME = 'ssl/client_ciphersuites' and VALUE like '560%'</compliant>
+      <noncompliant>NAME = 'ssl/client_ciphersuites' and NOT VALUE like '560%'</noncompliant>
+    </checkitem>
+    <checkitem desc="Set parameters (is/HTTP/show_detailed_errors)" id="2.90.01i" operator="">
+      <compliant>NAME = 'is/HTTP/show_detailed_errors'  and (VALUE = 'FALSE' or VALUE = 'false')</compliant>
+      <noncompliant>NAME = 'is/HTTP/show_detailed_errors'  and not ( VALUE = 'FALSE' or VALUE = 'false') </noncompliant>
+    </checkitem>
+    <checkitem desc="Set parameters (is/HTTP/show_server_header)" id="2.90.01j" operator="">
+      <compliant>NAME = 'is/HTTP/show_server_header'  and (VALUE = 'FALSE' or VALUE = 'false') </compliant>
+      <noncompliant>NAME = 'is/HTTP/show_server_header'  and not ( VALUE = 'FALSE' or VALUE = 'false') </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC gateway hardening (gw/acl_mode)" id="2.90.02a" operator="">
+      <compliant>NAME = 'gw/acl_mode'  and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'gw/acl_mode'  and not ( VALUE = '1'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC gateway hardening (gw/reg_no_conn_info)" id="2.90.02b" operator="">
+      <compliant>NAME = 'gw/reg_no_conn_info'  and VALUE = '129' </compliant>
+      <noncompliant>NAME = 'gw/reg_no_conn_info'  and not ( VALUE = '129'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC gateway hardening (gw/prxy_info)" id="2.90.02c" operator="">
+      <compliant>NAME = 'gw/prxy_info' and VALUE like_regexpr '.*prxyinfo.*' </compliant>
+      <noncompliant>NAME = 'gw/prxy_info' and not ( VALUE like_regexpr '.*prxyinfo.*' ) </noncompliant>
+    </checkitem>
+  </configstore>
+</targetsystem>

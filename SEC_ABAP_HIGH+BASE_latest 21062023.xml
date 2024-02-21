@@ -1,0 +1,669 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Changes:
+Initial Version Sven Diedrich
+Implemented workaround for HANA issue - D032525, 2019-09-03
+Reverted workaround back after HANA patch - D032525, 2019-10-02
+Implemented feedback from TLO's/SO's and stabilized checks - D032525, 2019-11-28
+Comprehensive check containing HIGH and Baseline checks - D032525, 2019-11-29
+Improved check 1.50.01a - D032525, 2020-04-14
+ -->
+<targetsystem desc="SEC_ABAP_HIGH+BASE" id="SEC_ABAP_HIGH+BASE" multisql="Yes" version="0000">
+  <!--
+Checks for client settings
+I7D/002 is a productive client used by PPMS development -> Exception
+-->
+  <configstore name="CLIENTS" name_extended="" sci_id="" system_type="ABAP">
+    <checkitem desc="Delete unused clients (except 001 and 000 and known exception)" id="1.10.01b" not_found="positive">
+      <compliant>MANDT like '%' and not MANDT = '001' and not MANDT = '000'</compliant>
+      <noncompliant>MANDT like '%' and not MANDT = '001' and not MANDT = '000'</noncompliant>
+      <!-- deactivate joinstore condition and created exception for I7D instead
+  <joinstore name="ENV_VARIABLES">
+        <joincompliant> NAME = 'SAPSYSTEMNAME' and (VALUE = 'I7D')</joincompliant>
+        <joinnoncompliant> NAME = 'SAPSYSTEMNAME' and NOT (VALUE = 'I7D')</joinnoncompliant>
+      </joinstore>
+-->
+    </checkitem>
+    <checkitem desc="System and Client Change options (client 000)" id="2.90.02c" operator="" system_roles="PROD:TEST:QA">
+      <compliant>MANDT = '000' and CCCORACTIV = '2' and CCNOCLIIND = '3' and ((CCCOPYLOCK = 'X') OR (CCCOPYLOCK = 'L')) and CCIMAILDIS like '' </compliant>
+      <noncompliant>MANDT = '000' and not ( CCCORACTIV = '2' and CCNOCLIIND = '3' and ((CCCOPYLOCK = 'X') OR (CCCOPYLOCK = 'L')) and CCIMAILDIS like '' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="System and Client Change options (client 001)" id="2.90.02d" not_found="positive" operator="" system_roles="PROD:QA">
+      <compliant>(MANDT = '001' and CCCORACTIV = '2' and CCNOCLIIND = '3' and ((CCCOPYLOCK = 'X') OR (CCCOPYLOCK = 'L')) and CCIMAILDIS like '') </compliant>
+      <noncompliant>MANDT = '001' and not ( CCCORACTIV = '2' and CCNOCLIIND = '3' and ((CCCOPYLOCK = 'X') OR (CCCOPYLOCK = 'L')) and CCIMAILDIS like '' ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for profile parametes -->
+  <configstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+    <checkitem desc="Secure SAP* (login/no_automatic_user_sapstar)" id="1.10.02a">
+      <compliant>NAME = 'login/no_automatic_user_sapstar' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'login/no_automatic_user_sapstar' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_lng)" id="1.20.01a">
+      <compliant>NAME = 'login/min_password_lng' and VALUE &gt;= '15' </compliant>
+      <noncompliant>NAME = 'login/min_password_lng' and not ( VALUE &gt;= '15' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_letters)" id="1.20.01b">
+      <compliant>NAME = 'login/min_password_letters' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_letters' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_digits)" id="1.20.01c">
+      <compliant>NAME = 'login/min_password_digits' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_digits' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_lowercase)" id="1.20.01d">
+      <compliant>NAME = 'login/min_password_lowercase' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_lowercase' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_uppercase)" id="1.20.01e">
+      <compliant>NAME = 'login/min_password_uppercase' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_uppercase' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_expiration_time)" id="1.20.01f">
+      <compliant>NAME = 'login/password_expiration_time' and VALUE &lt;= '90' </compliant>
+      <noncompliant>NAME = 'login/password_expiration_time' and not ( VALUE &lt;= '90' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_history_size)" id="1.20.01g">
+      <compliant>NAME = 'login/password_history_size' and VALUE &gt;= '15' </compliant>
+      <noncompliant>NAME = 'login/password_history_size' and not ( VALUE &gt;= '15' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_change_waittime)" id="1.20.01h">
+      <compliant>NAME = 'login/password_change_waittime' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/password_change_waittime' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_compliance_to_current_policy)" id="1.20.01i">
+      <compliant>NAME = 'login/password_compliance_to_current_policy' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'login/password_compliance_to_current_policy' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_specials)" id="1.20.01j">
+      <compliant>NAME = 'login/min_password_specials' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_specials' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/failed_user_auto_unlock)" id="1.20.01k">
+      <compliant>NAME = 'login/failed_user_auto_unlock' and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'login/failed_user_auto_unlock' and not ( VALUE = '0' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/fails_to_user_lock)" id="1.20.01l">
+      <compliant>NAME = 'login/fails_to_user_lock' and (VALUE &gt;= '3' OR VALUE &lt;= '6')  </compliant>
+      <noncompliant>NAME = 'login/fails_to_user_lock' and not (VALUE &gt;= '3' OR VALUE &lt;= '6') </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_diff)" id="1.20.01m">
+      <compliant>NAME = 'login/min_password_diff' and VALUE &gt;= '3' </compliant>
+      <noncompliant>NAME = 'login/min_password_diff' and not ( VALUE &gt;= '3' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_max_idle_initial)" id="1.20.01n">
+      <compliant>NAME = 'login/password_max_idle_initial' and VALUE &lt;= '7' </compliant>
+      <noncompliant>NAME = 'login/password_max_idle_initial' and not ( VALUE &lt;= '7' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_max_idle_productive)" id="1.20.01o">
+      <compliant>NAME = 'login/password_max_idle_productive' and VALUE = '90' </compliant>
+      <noncompliant>NAME = 'login/password_max_idle_productive' and not ( VALUE = '90' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_hash_algorithm)" id="1.20.01p">
+      <compliant>NAME = 'login/password_hash_algorithm' and (VALUE = 'encoding=RFC2307, algorithm=iSSHA-512, iterations=15000, saltsize=128' OR VALUE = 'encoding=RFC2307, algorithm=iSSHA-512, iterations=15000, saltsize=256') </compliant>
+      <noncompliant>NAME = 'login/password_hash_algorithm' and not ( VALUE = 'encoding=RFC2307, algorithm=iSSHA-512, iterations=15000, saltsize=128' OR VALUE = 'encoding=RFC2307, algorithm=iSSHA-512, iterations=15000, saltsize=256' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Ensure usage of strong password hashes only (login/password_downwards_compatibility)" id="1.20.02a">
+      <compliant>NAME = 'login/password_downwards_compatibility' and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'login/password_downwards_compatibility' and not ( VALUE = '0' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Default logging mechanism (rsau/enable) " id="1.30.01a">
+      <compliant>NAME = 'rsau/enable' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'rsau/enable' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Default logging mechanism (rsau/integrity) " id="1.30.01b">
+      <compliant>NAME = 'rsau/integrity' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'rsau/integrity' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Disable Detailed Logon Error Messages (login/show_detailed_errors)" id="1.50.04">
+      <compliant>NAME = 'login/show_detailed_errors' and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'login/show_detailed_errors' and not ( VALUE = '0' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Disable Pure and native CPIC communication (login/disable_cpic)" id="1.60.01c">
+      <compliant>NAME = 'login/disable_cpic' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'login/disable_cpic' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure access to transaction codes (auth/check/calltransaction)" id="1.80.08b">
+      <compliant>NAME = 'auth/check/calltransaction' and VALUE = '3' </compliant>
+      <noncompliant>NAME = 'auth/check/calltransaction' and not ( VALUE = '3' ) </noncompliant>
+    </checkitem>
+    <!--<checkitem desc="SAP GUI Scripting Security" id="1.80.12">
+      <compliant>(NAME = 'sapgui/user_scripting' and (VALUE = 'FALSE')) AND ( NAME = 'sapgui/user_scripting_per_user' and (VALUE = 'FALSE')) OR ((NAME = 'sapgui/user_scripting' and (VALUE = 'TRUE')) AND (NAME = 'sapgui/user_scripting_per_user') and (VALUE = 'TRUE'))</compliant>
+      <noncompliant>(NAME = 'sapgui/user_scripting' and NOT (VALUE = 'FALSE')) OR (NAME = 'sapgui/user_scripting_per_user' and VALUE != 'TRUE')</noncompliant>
+    </checkitem> -->
+    <checkitem desc=" ICF Logon With Expired or Initial Password (icf/reject_expired_passwd)" id="1.80.14">
+      <compliant>NAME = 'icf/reject_expired_passwd' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'icf/reject_expired_passwd' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="External Debugging Prohibited" id="1.80.15">
+      <compliant>NAME = 'abap/ext_debugging_possible' and (VALUE = '2')</compliant>
+      <noncompliant>NAME = 'abap/ext_debugging_possible' and NOT (VALUE = '2')</noncompliant>
+    </checkitem>
+    <checkitem desc="Activate table logging (rec/client)" id="1.120.02">
+      <compliant>NAME = 'rec/client' and ( VALUE like 'ALL' )</compliant>
+      <noncompliant>NAME = 'rec/client' and not ( VALUE like 'ALL' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC Calls For The Allowlisted Remote Function Modules Only (ucon/rfc/active)" id="2.130.01">
+      <compliant>NAME = 'ucon/rfc/active' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'ucon/rfc/active' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checking the server port https enabled
+	 - compliant if at least one server port runs Https
+	 - not-compliant if any server_port_% >0 runs Http and redirect not configured, server_port_0 is by default deactivated incoming so save
+	 - if redirect is configured Http on server_port_% is ok, 2019-11-28 D032525 -->
+  <configstore name="ABAP_INSTANCE_PAHI">
+    <checkitem desc="Configure HTTPS on SAP system (icm/server_port_xx)" id="1.50.01a" not_found="positive">
+      <compliant>(( NAME = 'icm/server_port_1' and VALUE like '%PROT=HTTPS%' )
+                          or ( NAME = 'icm/server_port_2' and VALUE like '%PROT=HTTPS%' )
+                          or ( NAME = 'icm/server_port_3' and VALUE like '%PROT=HTTPS%' )
+                          or ( NAME = 'icm/server_port_4' and VALUE like '%PROT=HTTPS%' )
+                          or ( NAME = 'icm/server_port_5' and VALUE like '%PROT=HTTPS%' )
+                          or ( NAME = 'icm/server_port_6' and VALUE like '%PROT=HTTPS%' )
+                          or ( NAME = 'icm/server_port_7' and VALUE like '%PROT=HTTPS%' )
+                          or ( NAME = 'icm/server_port_8' and VALUE like '%PROT=HTTPS%' )
+                          or ( NAME = 'icm/server_port_9' and VALUE like '%PROT=HTTPS%' ))
+         </compliant>
+      <complianttext/>
+      <noncompliant/>
+      <noncomplianttext/>
+    </checkitem>
+    <checkitem desc="http configured, but no redirekt" id="1.50.01a" not_found="positive">
+      <compliant>(( NAME = 'icm/server_port_1' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_2' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_3' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_4' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_5' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_6' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_7' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_8' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_9' and VALUE like '%PROT=HTTP,%' ))
+         </compliant>
+      <complianttext/>
+      <noncompliant>(( NAME = 'icm/server_port_1' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_2' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_3' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_4' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_5' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_6' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_7' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_8' and VALUE like '%PROT=HTTP,%' )
+                          or ( NAME = 'icm/server_port_9' and VALUE like '%PROT=HTTP,%' ))
+         </noncompliant>
+      <noncomplianttext/>
+      <joinstore minus="No" name="ABAP_INSTANCE_PAHI">
+        <joincompliant>  NAME like 'icm/HTTP/redirect_%' and ( VALUE like_regexpr '.*[Hh][Tt][Tt][Pp][Ss].*' ) </joincompliant>
+        <joinnoncompliant> NAME like 'icm/HTTP/redirect_%' and not ( VALUE like_regexpr '.*[Hh][Tt][Tt][Pp][Ss].*' ) </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Configure SNC from SAP GUI to SAP system (snc/enable)" id="1.50.02a">
+      <compliant>NAME = 'snc/enable' and VALUE like '1%' </compliant>
+      <noncompliant>NAME = 'snc/enable' and not VALUE like '1%'  </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure SNC from SAP GUI to SAP system (snc/data_protection/max)" id="1.50.02b">
+      <compliant>NAME = 'snc/data_protection/max' and VALUE = '3' </compliant>
+      <noncompliant>NAME = 'snc/data_protection/max' and not ( VALUE = '3' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure SNC from SAP GUI to SAP system (snc/data_protection/min)" id="1.50.02c">
+      <compliant>NAME = 'snc/data_protection/min' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'snc/data_protection/min' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure SNC from SAP GUI to SAP system (snc/data_protection/use)" id="1.50.02d">
+      <compliant>NAME = 'snc/data_protection/use' and VALUE = '3' </compliant>
+      <noncompliant>NAME = 'snc/data_protection/use' and not( VALUE = '3' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure SNC from SAP GUI to SAP system (snc/accept_insecure_gui)" id="1.50.02e">
+      <compliant>NAME = 'snc/accept_insecure_gui' and VALUE = 'U' </compliant>
+      <noncompliant>NAME = 'snc/accept_insecure_gui' and not( VALUE = 'U' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Logon Ticket Issuing (login/accept_sso2_ticket)" id="1.50.03a">
+      <compliant>NAME = 'login/accept_sso2_ticket' and ( VALUE = '0' or VALUE = '1' )</compliant>
+      <noncompliant>NAME = 'login/accept_sso2_ticket' and not ( ( VALUE = '0' or VALUE = '1' ) ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Logon Ticket Issuing (login/create_sso2_ticket)" id="1.50.03b">
+      <compliant>NAME = 'login/create_sso2_ticket' and ( VALUE = '0' or VALUE = '1' or VALUE = '2' or VALUE = '3' )</compliant>
+      <noncompliant>NAME = 'login/create_sso2_ticket' and not ( (  VALUE = '0' or VALUE = '1' or VALUE = '2' or VALUE = '3' ) ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Logon Ticket Issuing (login/ticket_only_to_host)" id="1.50.03c">
+      <compliant>NAME = 'login/ticket_only_to_host' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'login/ticket_only_to_host' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC connectivity (rfc/reject_expired_passwd)" id="1.60.01a">
+      <compliant>NAME = 'rfc/reject_expired_passwd' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'rfc/reject_expired_passwd' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC connectivity (rfc/callback_security_method)" id="1.60.01b">
+      <compliant>NAME = 'rfc/callback_security_method' and VALUE = '3' </compliant>
+      <noncompliant>NAME = 'rfc/callback_security_method' and not ( VALUE = '3' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC authority check" id="1.60.02a">
+      <compliant>NAME = 'auth/rfc_authority_check' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'auth/rfc_authority_check' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC gateway hardening (gw/acl_mode)" id="1.80.02a">
+      <compliant>NAME = 'gw/acl_mode' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'gw/acl_mode' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC gateway hardening (gw/reg_no_conn_info)" id="1.80.02b">
+      <compliant>NAME = 'gw/reg_no_conn_info' and (VALUE = '129' OR VALUE= '255' ) </compliant>
+      <noncompliant>NAME = 'gw/reg_no_conn_info' and not ( VALUE = '129' OR VALUE= '255' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC gateway hardening (gw/sec_info)" id="1.80.02c">
+      <compliant>NAME = 'gw/sec_info' and (VALUE like_regexpr '.*secinfo.*' or VALUE like_regexpr '.*SYS.*.secinfo.*') </compliant>
+      <noncompliant>NAME = 'gw/sec_info' and not ( VALUE like_regexpr '.*secinfo.*' or VALUE like_regexpr '.*SYS.*.secinfo.*')</noncompliant>
+    </checkitem>
+    <!-- 1.80.03a rdisp/mssever <> _internal should be done with Bladelogic -->
+    <checkitem desc="Message server hardening (ms/monitor)" id="1.80.03b">
+      <compliant>NAME = 'ms/monitor' and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'ms/monitor' and not ( VALUE = '0' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Message server hardening (ms/acl_info)" id="1.80.03c">
+      <compliant>NAME = 'ms/acl_info' and VALUE like_regexpr '.*ms_acl_info' </compliant>
+      <noncompliant>NAME = 'ms/acl_info' and not ( VALUE like_regexpr '.*ms_acl_info' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure access to SAP Management Console (service/protectedwebmethods)" id="1.80.07a">
+      <compliant>NAME = 'service/protectedwebmethods' and (VALUE = 'SDEFAULT')</compliant>
+      <noncompliant>NAME = 'service/protectedwebmethods' and not (VALUE = 'SDEFAULT')</noncompliant>
+    </checkitem>
+    <checkitem desc="Maximum timeout of no input at GUI (rdisp/gui_auto_logout)" id="1.80.10">
+      <compliant>NAME = 'rdisp/gui_auto_logout' and (lpad(VALUE, 6, '0' ) between '000001' and '003600') </compliant>
+      <noncompliant>NAME = 'rdisp/gui_auto_logout' and NOT (lpad(VALUE, 6, '0' ) between '000001' and '003600') </noncompliant>
+    </checkitem>
+    <!-- dbacockpit checks have been deactivated until SOs are informed
+    After grace period now activated - Chris -->
+    <checkitem desc="DBA Cockpit Security (dbs/dba/ccms_maintenance)" id="1.80.13a">
+      <compliant>NAME = 'dbs/dba/ccms_maintenance' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'dbs/dba/ccms_maintenance' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="DBA Cockpit Security (dbs/dba/ccms_security_level)" id="1.80.13b">
+      <compliant>NAME = 'dbs/dba/ccms_security_level' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'dbs/dba/ccms_security_level' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Enforcement of HTTPS (icm/HTTP/redirect)" id="2.30.01a" not_found="positive">
+      <compliant>NAME like 'icm/HTTP/redirect_%' and VALUE like_regexpr '.*[Hh][Tt][Tt][Pp][Ss].*' </compliant>
+      <noncompliant>NAME like 'icm/HTTP/redirect_%' and not ( VALUE like_regexpr '.*[Hh][Tt][Tt][Pp][Ss].*' ) </noncompliant>
+    </checkitem>
+    <!-- deactivated after clarification with SGS
+    <checkitem desc="Enforcement of HTTPS (icm/HTTPS/verify_client)" id="2.30.01b">
+      <compliant>NAME like 'icm/HTTPS/verify_client' and VALUE = '2' </compliant>
+      <noncompliant>NAME like 'icm/HTTPS/verify_client' and not ( VALUE = '2' ) </noncompliant>
+    </checkitem>
+-->
+    <checkitem desc="Secure session handling (icf/user_recheck)" id="2.60.01a">
+      <compliant>NAME = 'icf/user_recheck' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'icf/user_recheck' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure cookie handling (login/ticket_only_by_https)" id="2.60.02a">
+      <compliant>NAME = 'login/ticket_only_by_https' and VALUE = '1' </compliant>
+      <noncompliant>NAME = 'login/ticket_only_by_https' and not ( VALUE = '1' ) </noncompliant>
+    </checkitem>
+    <!-- Check deactivated as only SHOULD requirement - 02.10.2020, D032525
+      <checkitem desc="Secure access to transaction codes" id="1.80.08a">
+      <compliant>NAME = 'auth/tcodes_not_checked' and (VALUE = 'N' or VALUE = '')</compliant>
+      <noncompliant>NAME = 'auth/tcodes_not_checked' and not (VALUE = 'N' or VALUE = '')</noncompliant>
+    </checkitem>
+-->
+    <!-- check item deactivated as this requirement was retired last year in December - Achim Bühn, 23.02.2021
+    <checkitem desc="Secure multiple SAPGUI logons" id="1.80.09a">
+      <compliant>NAME = 'login/disable_multi_gui_login' and (VALUE = '1')</compliant>
+      <noncompliant>NAME = 'login/disable_multi_gui_login' and not (VALUE = '1')</noncompliant>
+    </checkitem>
+-->
+    <!--
+found values with #comment in the value field. Hence I´m checking also VALUE + Comment
+-->
+    <checkitem desc="Secure cookie handling (icf/set_HTTPonly_flag_on_cookies)" id="2.60.02b">
+      <compliant>NAME = 'icf/set_HTTPonly_flag_on_cookies' and ((VALUE = '0') or (VALUE like '0 #%')) </compliant>
+      <noncompliant>NAME = 'icf/set_HTTPonly_flag_on_cookies' and not (( VALUE = '0' ) or  (VALUE like '0 #%'))  </noncompliant>
+    </checkitem>
+    <checkitem desc="Default logging mechanism (gw/logging)" id="2.70.01a">
+      <compliant>NAME = 'gw/logging' and (VALUE like_regexpr ('ACTION=SsPXM LOGFILE=.*gw_log.*') or VALUE like_regexpr ('ACTION=SPXM LOGFILE=.*gw_log.*'))</compliant>
+      <noncompliant>NAME = 'gw/logging' and not (VALUE like_regexpr ('ACTION=SsPXM LOGFILE=.*gw_log.*' ) or VALUE like_regexpr ('ACTION=SPXM LOGFILE=.*gw_log.*'))</noncompliant>
+    </checkitem>
+    <checkitem desc="Default logging mechanism (icm/HTTP/logging)" id="2.70.01b" not_found="negative">
+      <compliant>NAME = 'icm/HTTP/logging_0' and VALUE like '%' </compliant>
+      <noncompliant>NAME = 'icm/HTTP/logging_0' and not ( VALUE like '%' ) </noncompliant>
+    </checkitem>
+    <!-- check id="2.70.01b modified so it just checks for existing logging but format is not mandatory -->
+    <checkitem desc="Activate table logging (rec/client)" id="2.70.02a">
+      <compliant>NAME = 'rec/client' and ( VALUE like_regexpr '000' or VALUE like_regexpr 'ALL' or VALUE like_regexpr '001' )</compliant>
+      <noncompliant>NAME = 'rec/client' and not ( ( VALUE like_regexpr '000' or VALUE like_regexpr 'ALL' or VALUE like_regexpr '001') ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (login/fails_to_session_end)" id="2.90.01e">
+      <compliant>NAME = 'login/fails_to_session_end' and VALUE = '3' </compliant>
+      <noncompliant>NAME = 'login/fails_to_session_end' and not ( VALUE = '3' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (login/fails_to_user_lock)" id="2.90.01f">
+      <compliant>NAME = 'login/fails_to_user_lock' and VALUE = '3' </compliant>
+      <noncompliant>NAME = 'login/fails_to_user_lock' and not ( VALUE = '3' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (login/failed_user_auto_unlock)" id="2.90.01g">
+      <compliant>NAME = 'login/failed_user_auto_unlock' and VALUE = '0' </compliant>
+      <noncompliant>NAME = 'login/failed_user_auto_unlock' and not ( VALUE = '0' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (is/HTTP/show_detailed_errors)" id="2.90.01h">
+      <compliant>NAME = 'is/HTTP/show_detailed_errors' and VALUE like_regexpr '[Ff][Aa][Ll][Ss][Ee]' </compliant>
+      <noncompliant>NAME = 'is/HTTP/show_detailed_errors' and not ( VALUE like_regexpr '[Ff][Aa][Ll][Ss][Ee]' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (is/HTTP/show_server_header)" id="2.90.01i">
+      <compliant>NAME = 'is/HTTP/show_server_header' and VALUE like_regexpr '[Ff][Aa][Ll][Ss][Ee]' </compliant>
+      <noncompliant>NAME = 'is/HTTP/show_server_header' and not ( VALUE like_regexpr '[Ff][Aa][Ll][Ss][Ee]' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (auth/object_disabling_active)" id="2.90.01j">
+      <compliant>NAME = 'auth/object_disabling_active' and VALUE = 'N' </compliant>
+      <noncompliant>NAME = 'auth/object_disabling_active' and not ( VALUE = 'N' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Set profile parameters (ssl/ciphersuites)" id="2.90.01k">
+      <compliant>NAME = 'ssl/ciphersuites' and VALUE like '545%'</compliant>
+      <noncompliant>NAME = 'ssl/ciphersuites' and NOT VALUE like '545%'</noncompliant>
+    </checkitem>
+    <checkitem desc="RFC gateway hardening (gw/reg_info)" id="2.90.03a">
+      <compliant>NAME = 'gw/reg_info' and VALUE like_regexpr '.*reginfo.*' </compliant>
+      <noncompliant>NAME = 'gw/reg_info' and not ( VALUE like_regexpr '.*reginfo.*' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="RFC gateway hardening (gw/prxy_info)" id="2.90.04a">
+      <compliant>NAME = 'gw/prxy_info' and VALUE like_regexpr '.*prxyinfo.*' </compliant>
+      <noncompliant>NAME = 'gw/prxy_info' and not ( VALUE like_regexpr '.*prxyinfo.*' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Client Ciphersuites Parameter" id="2.90.01l">
+      <compliant>NAME = 'ssl/client_ciphersuites' and VALUE like '560%'</compliant>
+      <noncompliant>NAME = 'ssl/client_ciphersuites' and NOT VALUE like '560%'</noncompliant>
+    </checkitem>
+    <!---
+system/secure_communication was introduced with 740 SP08. Hence where parameter does not exist, the parameter might not exist. -> not_found=positve
+Parameter is a SHOULD recommendation in ABAP hardening procedure therefor deactivated - 12062020, D032525
+    <checkitem desc="Set profile parameters (system/secure_communication)" id="2.90.01m" not_found="positive">
+      <compliant>NAME = 'system/secure_communication' and VALUE = 'ON' </compliant>
+      <noncompliant>NAME = 'system/secure_communication' and not ( VALUE = 'ON' ) </noncompliant>
+    </checkitem>
+-->
+    <!-- deactivated after discussion with SGS as issues occur and SHOULD parameter in Security Guide, D032525, 2019-10-08
+	<checkitem desc="Set profile parameters (ixml/dtd_restriction)" id="2.90.01n">
+      <compliant>NAME = 'ixml/dtd_restriction' and VALUE = 'prohibited' </compliant>
+      <noncompliant>NAME = 'ixml/dtd_restriction' and not ( VALUE = 'prohibited' ) </noncompliant>
+    </checkitem>
+	-->
+    <checkitem desc="Logging of all dynamic source code changes (abap/dyn_abap_log)" id="2.120.01">
+      <compliant>NAME = 'abap/dyn_abap_log' and ( VALUE = 'on' or VALUE = 'no_uname' )</compliant>
+      <noncompliant>NAME = 'abap/dyn_abap_log' and not ( VALUE = 'on' or VALUE = 'no_uname' ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for critical sicf services -->
+  <configstore name="SICF_SERVICES" name_extended="" sci_id="">
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/soap/rfc)" id="1.80.05a" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'RFC' and URL = '/sap/bc/soap/rfc/' </compliant>
+      <noncompliant>ICF_NAME = 'RFC' and URL = '/sap/bc/soap/rfc/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/echo)" id="1.80.05b" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'ECHO' and URL = '/sap/bc/echo/' </compliant>
+      <noncompliant>ICF_NAME = 'ECHO' and URL = '/sap/bc/echo/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/FormToRfc)" id="1.80.05c" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'FORMTORFC' and URL = '/sap/bc/FormToRfc/' </compliant>
+      <noncompliant>ICF_NAME = 'FORMTORFC' and URL = '/sap/bc/FormToRfc/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/report)" id="1.80.05d" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'REPORT' and URL = '/sap/bc/report/' </compliant>
+      <noncompliant>ICF_NAME = 'REPORT' and URL = '/sap/bc/report/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/xrfc)" id="1.80.05e" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'XRFC' and URL = '/sap/bc/xrfc/' </compliant>
+      <noncompliant>ICF_NAME = 'XRFC' and URL = '/sap/bc/xrfc/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/xrfc_test)" id="1.80.05f" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'XRFC_TEST' and URL = '/sap/bc/xrfc_test/' </compliant>
+      <noncompliant>ICF_NAME = 'XRFC_TEST' and URL = '/sap/bc/xrfc_test/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/error)" id="1.80.05g" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'ERROR' and URL = '/sap/bc/error/' </compliant>
+      <noncompliant>ICF_NAME = 'ERROR' and URL = '/sap/bc/error/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/webrfc)" id="1.80.05h" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'WEBRFC' and URL = '/sap/bc/webrfc/' </compliant>
+      <noncompliant>ICF_NAME = 'WEBRFC' and URL = '/sap/bc/webrfc/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/bsp/sap/certreq)" id="1.80.05i" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'CERTREQ' and URL = '/sap/bc/bsp/sap/certreq/' </compliant>
+      <noncompliant>ICF_NAME = 'CERTREQ' and URL = '/sap/bc/bsp/sap/certreq/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/bsp/sap/certmap)" id="1.80.05j" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'CERTMAP' and URL = '/sap/bc/bsp/sap/certmap/' </compliant>
+      <noncompliant>ICF_NAME = 'CERTMAP' and URL = '/sap/bc/bsp/sap/certmap/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/gui/sap/its/CERTREQ)" id="1.80.05k" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'CERTREQ' and URL = '/sap/bc/gui/sap/its/CERTREQ/' </compliant>
+      <noncompliant>ICF_NAME = 'CERTREQ' and URL = '/sap/bc/gui/sap/its/CERTREQ/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/gui/sap/its/CERTMAP)" id="1.80.05l" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'CERTMAP' and URL = '/sap/bc/gui/sap/its/CERTMAP/' </compliant>
+      <noncompliant>ICF_NAME = 'CERTMAP' and URL = '/sap/bc/gui/sap/its/CERTMAP/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/bsp/sap/bsp_veri)" id="1.80.05m" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'BSP_VERI' and URL = '/sap/bc/bsp/sap/bsp_veri/' </compliant>
+      <noncompliant>ICF_NAME = 'BSP_VERI' and URL = '/sap/bc/bsp/sap/bsp_veri/' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/bsp/sap/icf)" id="1.80.05n" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'ICF' and URL = '/sap/bc/bsp/sap/icf' </compliant>
+      <noncompliant>ICF_NAME = 'ICF' and URL = '/sap/bc/bsp/sap/icf' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/IDoc_XML)" id="1.80.05o" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'IDOC_XML' and URL = '/sap/bc/IDoc_XML' </compliant>
+      <noncompliant>ICF_NAME = 'IDOC_XML' and URL = '/sap/bc/IDoc_XML' </noncompliant>
+    </checkitem>
+    <checkitem desc="Deactivate critical ICF services (/sap/bc/srt/IDoc)" id="1.80.05p" operator="not_exist:URL">
+      <compliant>ICF_NAME = 'IDOC' and URL = '/sap/bc/srt/IDoc/' </compliant>
+      <noncompliant>ICF_NAME = 'IDOC' and URL = '/sap/bc/srt/IDoc/' </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for security audit log -->
+  <configstore name="AUDIT_CONFIGURATION">
+    <checkitem desc="Default logging mechanism (Security Audit Log enabled)" id="2.70.01c">
+      <compliant>NAME = 'Enabled' and VALUE = 'Yes'</compliant>
+      <noncompliant>NAME = 'Enabled' and not ( VALUE = 'Yes' ) </noncompliant>
+      <!-- After discussion with Christoph Uhl deactivated
+     <joinstore name="AUDIT_CONFIGURATION_SLOT" name_extended="" sci_id="">
+        <joincompliant>SLOTINDEX like '%' and client =  '*' and UNAME like 'FIREFIGT_%' and status = 'X'</joincompliant>
+        <joinnoncompliant>SLOTINDEX like '% and not ( status = 'X' )</joinnoncompliant>
+      </joinstore>
+-->
+    </checkitem>
+  </configstore>
+  <!-- Checks for standard users -->
+  <configstore name="STANDARD_USERS" name_extended="" sci_id="">
+    <checkitem desc="Secure SAP* (SAP* in client 000)" id="1.10.02b" operator="">
+      <compliant>CLIENT = '000' and USERNAME = 'SAP*' and ((PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = 'X') OR (PASSWORD_STATUS = '' AND EXISTING = '' AND LOCKED = ''))</compliant>
+      <noncompliant>CLIENT = '000' and USERNAME = 'SAP*' and ((PASSWORD_STATUS = 'DEFAULT' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'DEFAULT' and EXISTING = '' AND LOCKED = ''))</noncompliant>
+    </checkitem>
+    <checkitem desc="Secure SAP* (SAP* in client 001)" id="1.10.02c" not_found="positive" operator="">
+      <compliant>CLIENT = '001' and USERNAME = 'SAP*' and ((PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = 'X') OR (PASSWORD_STATUS = '' AND EXISTING = '' AND LOCKED = ''))</compliant>
+      <noncompliant>CLIENT = '001' and USERNAME = 'SAP*' and ((PASSWORD_STATUS = 'DEFAULT' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'DEFAULT' and EXISTING = '' AND LOCKED = ''))</noncompliant>
+    </checkitem>
+    <checkitem desc="Secure SAP* (SAP* in client 066 if exist)" id="1.10.02e" not_found="positive" operator="">
+      <compliant>CLIENT = '066' and USERNAME = 'SAP*' and ((PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = 'X') OR (PASSWORD_STATUS = '' AND EXISTING = '' AND LOCKED = ''))</compliant>
+      <noncompliant>CLIENT = '066' and USERNAME = 'SAP*' and ((PASSWORD_STATUS = 'DEFAULT' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'DEFAULT' and EXISTING = '' AND LOCKED = ''))</noncompliant>
+    </checkitem>
+    <checkitem desc="Secure SAP* (SAP* in ALL other clients)" id="1.10.02f" operator="not_exist:CLIENT">
+      <compliant>CLIENT like '%' and not CLIENT = '001' and not CLIENT = '000' and CLIENT = '066' and USERNAME = 'SAP*' and (USERNAME = 'SAP*' and (PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = 'X') OR (PASSWORD_STATUS = '' AND EXISTING = '' AND LOCKED = ''))</compliant>
+      <noncompliant>CLIENT like '%' and not CLIENT = '001' and not CLIENT = '000' and not CLIENT = '066' and USERNAME = 'SAP*' and (USERNAME = 'SAP*' and (PASSWORD_STATUS = 'DEFAULT' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'DEFAULT' and EXISTING = '' AND LOCKED = ''))</noncompliant>
+    </checkitem>
+    <checkitem desc="Secure EARLYWATCH, DDIC, and SAPCPIC (EARLYWATCH in all clients)" id="1.10.04a" not_found="positive" operator="">
+      <compliant>CLIENT like '%' and USERNAME = 'EARLYWATCH' and ((PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = 'X') OR (PASSWORD_STATUS = '' AND EXISTING = '' AND LOCKED = ''))</compliant>
+      <noncompliant>CLIENT like '%' and USERNAME = 'EARLYWATCH' and ((PASSWORD_STATUS = 'DEFAULT' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'DEFAULT' and EXISTING = '' AND LOCKED = ''))         </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure EARLYWATCH, DDIC, and SAPCPIC (DDIC in 000)" id="1.10.04b" operator="">
+      <compliant>CLIENT = '000' and USERNAME = 'DDIC' and not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' ) and EXISTING = 'X')</compliant>
+      <noncompliant>CLIENT = '000' and USERNAME = 'DDIC' and not ( not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure EARLYWATCH, DDIC, and SAPCPIC (SAPCPIC in all clients)" id="1.10.04c" not_found="positive" operator="">
+      <compliant>CLIENT like '%' and USERNAME = 'SAPCPIC' and ((PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = 'X') OR (PASSWORD_STATUS = '' AND EXISTING = '' AND LOCKED = ''))</compliant>
+      <noncompliant>CLIENT like '%' and USERNAME = 'SAPCPIC' and ((PASSWORD_STATUS = 'DEFAULT' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'DEFAULT' and EXISTING = '' AND LOCKED = ''))         </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure DDIC (DDIC in client 001)" id="1.10.04d" not_found="positive" operator="" system_roles="PROD">
+      <compliant>CLIENT = '001' and USERNAME = 'DDIC' and not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' and LOCKED = 'X' </compliant>
+      <noncompliant>CLIENT = '001' and USERNAME = 'DDIC' and not ( not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' and LOCKED = 'X' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure DDIC in all clients except 000" id="1.10.04e" operator="not_exist:CLIENT">
+      <compliant>CLIENT like '%' and not CLIENT = '000' and not CLIENT = '001' and USERNAME = 'DDIC' and (USERNAME = 'DDIC' and (PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = 'X') OR (PASSWORD_STATUS = '' AND EXISTING = '' AND LOCKED = ''))</compliant>
+      <noncompliant>CLIENT like '%' and not CLIENT = '000' and not CLIENT = '001' and USERNAME = 'DDIC' and (USERNAME = 'DDIC' and (PASSWORD_STATUS = 'DEFAULT' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'CHANGED' AND EXISTING = 'X' AND LOCKED = '') OR (PASSWORD_STATUS = 'DEFAULT' and EXISTING = '' AND LOCKED = ''))</noncompliant>
+    </checkitem>
+    <checkitem desc="Secure ALL standard users in all remaining clients" id="1.10.04f" not_found="positive" operator="">
+      <compliant>USERNAME like '%' and CLIENT like '%' and CLIENT &lt;&gt; '066' and CLIENT &lt;&gt; '001' and CLIENT &lt;&gt; '000' and not USERNAME = 'SAP*' and not ( (PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' and LOCKED = 'X' </compliant>
+      <noncompliant>USERNAME like '%' and CLIENT like '%' and CLIENT &lt;&gt; '066' and CLIENT &lt;&gt; '001' and CLIENT &lt;&gt; '000' and not USERNAME = 'SAP*' and PASSWORD_STATUS = 'DEFAULT' and not ( not ( ( PASSWORD_STATUS = 'DEFAULT' or PASSWORD_STATUS = 'UNKNOWN' )) and EXISTING = 'X' and LOCKED = 'X' ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <configstore name="AUTH_PROFILE_USER" name_extended="" sci_id="">
+    <checkitem desc="DDIC must be type DIALOG" id="1.110.01a" not_found="positive" operator="">
+      <compliant>USERNAME = 'DDIC' and USER_TYPE = 'DIALOG'</compliant>
+      <noncompliant>USERNAME = 'DDIC' and NOT (USER_TYPE = 'DIALOG')</noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for password hashes
+	BCODE oder PASSCODE ok falls login/password_downwards_compatibility = 0
+-->
+  <configstore name="USER_PASSWD_HASH_USAGE" name_extended="" sci_id="">
+    <checkitem desc="Ensure usage of strong password hashes only (SYSTEM users with BCODE exist)" id="1.20.02c" not_found="positive" operator="">
+      <compliant>USER_TYPE = 'SYSTEM'  and BCODE = 'USED'  and NUM_USER &lt;= '0' </compliant>
+      <noncompliant>USER_TYPE = 'SYSTEM'  and BCODE = 'USED'  and not ( NUM_USER &lt;= '0'  ) </noncompliant>
+      <joinstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+        <joincompliant>NAME = 'login/password_downwards_compatibility' and VALUE = '0' </joincompliant>
+        <joinnoncompliant>NAME = 'login/password_downwards_compatibility' and not ( VALUE = '0' ) </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Ensure usage of strong password hashes only (COMM users with BCODE exist)" id="1.20.02d" not_found="positive" operator="">
+      <compliant>USER_TYPE = 'COMMUNICATION'  and BCODE = 'USED'  and NUM_USER &lt;= '0' </compliant>
+      <noncompliant>USER_TYPE = 'COMMUNICATION'  and BCODE = 'USED'  and not ( NUM_USER &lt;= '0'  ) </noncompliant>
+      <joinstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+        <joincompliant>NAME = 'login/password_downwards_compatibility' and VALUE = '0' </joincompliant>
+        <joinnoncompliant>NAME = 'login/password_downwards_compatibility' and not ( VALUE = '0' ) </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Ensure usage of strong password hashes only (SERVICE users with BCODE exist)" id="1.20.02e" not_found="positive" operator="">
+      <compliant>USER_TYPE = 'SERVICE'  and BCODE = 'USED'  and NUM_USER = '0' </compliant>
+      <noncompliant>USER_TYPE = 'SERVICE'  and BCODE = 'USED'  and not ( NUM_USER = '0'  ) </noncompliant>
+      <joinstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+        <joincompliant>NAME = 'login/password_downwards_compatibility' and VALUE = '0' </joincompliant>
+        <joinnoncompliant>NAME = 'login/password_downwards_compatibility' and not ( VALUE = '0' ) </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Ensure usage of strong password hashes only (DIALOG users with PASSCODE exist)" id="1.20.02f" not_found="positive" operator="">
+      <compliant>USER_TYPE = 'DIALOG'  and PASSCODE = 'USED'  and NUM_USER = '0' </compliant>
+      <noncompliant>USER_TYPE = 'DIALOG'  and PASSCODE = 'USED'  and not ( NUM_USER = '0'  ) </noncompliant>
+      <joinstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+        <joincompliant>NAME = 'login/password_downwards_compatibility' and VALUE = '0' </joincompliant>
+        <joinnoncompliant>NAME = 'login/password_downwards_compatibility' and not ( VALUE = '0' ) </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Ensure usage of strong password hashes only (SYSTEM users with PASSCODE exist)" id="1.20.02g" not_found="positive" operator="">
+      <compliant>USER_TYPE = 'SYSTEM'  and PASSCODE = 'USED'  and NUM_USER &lt;= '0' </compliant>
+      <noncompliant>USER_TYPE = 'SYSTEM'  and PASSCODE = 'USED'  and not ( NUM_USER &lt;= '0'  ) </noncompliant>
+      <joinstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+        <joincompliant>NAME = 'login/password_downwards_compatibility' and VALUE = '0' </joincompliant>
+        <joinnoncompliant>NAME = 'login/password_downwards_compatibility' and not ( VALUE = '0' ) </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Ensure usage of strong password hashes only (COMM users with PASSCODE exist)" id="1.20.02h" not_found="positive" operator="">
+      <compliant>USER_TYPE = 'COMMUNICATION'  and PASSCODE = 'USED'  and NUM_USER &lt;= '0' </compliant>
+      <noncompliant>USER_TYPE = 'COMMUNICATION'  and PASSCODE = 'USED'  and not ( NUM_USER &lt;= '0'  ) </noncompliant>
+      <joinstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+        <joincompliant>NAME = 'login/password_downwards_compatibility' and VALUE = '0' </joincompliant>
+        <joinnoncompliant>NAME = 'login/password_downwards_compatibility' and not ( VALUE = '0' ) </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Ensure usage of strong password hashes only (SERVICE users with PASSCODE exist)" id="1.20.02i" not_found="positive" operator="">
+      <compliant>USER_TYPE = 'SERVICE'  and PASSCODE = 'USED'  and NUM_USER = '0' </compliant>
+      <noncompliant>USER_TYPE = 'SERVICE'  and PASSCODE = 'USED'  and not ( NUM_USER = '0'  ) </noncompliant>
+      <joinstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+        <joincompliant>NAME = 'login/password_downwards_compatibility' and VALUE = '0' </joincompliant>
+        <joinnoncompliant>NAME = 'login/password_downwards_compatibility' and not ( VALUE = '0' ) </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Ensure usage of strong password hashes only (DIALOG users with BCODE exist)" id="1.80.02b" not_found="positive" operator="">
+      <compliant>USER_TYPE = 'DIALOG'  and BCODE = 'USED'  and NUM_USER = '0' </compliant>
+      <noncompliant>USER_TYPE = 'DIALOG'  and BCODE = 'USED'  and not ( NUM_USER = '0'  ) </noncompliant>
+      <joinstore name="ABAP_INSTANCE_PAHI" name_extended="" sci_id="">
+        <joincompliant>NAME = 'login/password_downwards_compatibility' and VALUE = '0' </joincompliant>
+        <joinnoncompliant>NAME = 'login/password_downwards_compatibility' and not ( VALUE = '0' ) </joinnoncompliant>
+      </joinstore>
+    </checkitem>
+  </configstore>
+  <!-- Checks for system modifiable setting -->
+  <configstore name="GLOBAL" name_extended="" sci_id="">
+    <checkitem desc="System and Client Change options (System modifiable) in Productive" id="2.90.02a" operator="" system_roles="PROD">
+      <compliant>NAME = 'GLOBAL_SETTING'  and VALUE &lt;&gt; 'MODIFIABLE' </compliant>
+      <noncompliant>NAME = 'GLOBAL_SETTING'  and not ( VALUE &lt;&gt; 'MODIFIABLE'  ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for gw secinfo -->
+  <!-- Checks for gw secinfo -->
+  <configstore name="GW_SECINFO" name_extended="" sci_id="">
+    <checkitem desc="RFC gateway hardening (secinfo content)" id="1.80.02d" operator="">
+      <compliant>line like '%' and ((text like_regexpr 'USER-HOST=' and text like_regexpr 'USER-HOST=[^*]') or text like_regexpr '[^-]HOST=[^*]') </compliant>
+      <noncompliant>line like '%' and not  ((text like_regexpr 'USER-HOST=' and text like_regexpr 'USER-HOST=[^*]') or text like_regexpr '[^-]HOST=[^*]') </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for ms acl info -->
+  <configstore name="MS_SECINFO" name_extended="" sci_id="">
+    <checkitem desc="Message server hardening (acl_info content)" id="1.80.03d" operator="">
+      <compliant>line like '%' and text like_regexpr 'HOST=[^*]'</compliant>
+      <noncompliant>line like '%' and text = 'HOST=*'</noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for table authorization groups -->
+  <configstore name="TDDAT_TABLES" name_extended="" sci_id="">
+    <checkitem desc="Restrict access to password hashes (USR02)" id="1.20.03a" not_found="positive" operator="">
+      <compliant>TABNAME = 'USR02'  and CCLASS = 'SPWD' </compliant>
+      <noncompliant>TABNAME = 'USR02'  and not ( CCLASS = 'SPWD'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Restrict access to password hashes (USH02)" id="1.20.03b" not_found="positive" operator="">
+      <compliant>TABNAME = 'USH02'  and CCLASS = 'SPWD'  </compliant>
+      <noncompliant>TABNAME = 'USH02'  and not ( CCLASS = 'SPWD'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Restrict access to password hashes (VUSER001)" id="1.20.03c" not_found="positive" operator="">
+      <compliant>TABNAME = 'VUSER001'  and CCLASS = 'SPWD' </compliant>
+      <noncompliant>TABNAME = 'VUSER001'  and not ( CCLASS = 'SPWD'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Restrict access to password hashes (USH02_ARC_TMP)" id="1.20.03d" not_found="positive" operator="">
+      <compliant>TABNAME = 'USH02_ARC_TMP'  and CCLASS = 'SPWD' </compliant>
+      <noncompliant>TABNAME = 'USH02_ARC_TMP'  and not ( CCLASS = 'SPWD'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Restrict access to password hashes (USRPWDHISTORY)" id="1.20.03e" not_found="positive" operator="">
+      <compliant>TABNAME = 'USRPWDHISTORY'  and CCLASS = 'SPWD' </compliant>
+      <noncompliant>TABNAME = 'USRPWDHISTORY'  and not ( CCLASS = 'SPWD'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Restrict access to password hashes (VUSR02_PWD)" id="1.20.03f" not_found="positive" operator="">
+      <compliant>TABNAME = 'VUSR02_PWD'  and CCLASS = 'SPWD'  </compliant>
+      <noncompliant>TABNAME = 'VUSR02_PWD'  and not ( CCLASS = 'SPWD'  ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Secure cryptographic keys" id="1.80.04a" not_found="positive" operator="">
+      <compliant>TABNAME = 'SSF_PSE_D'  and CCLASS = 'SPSE' </compliant>
+      <noncompliant>TABNAME = 'SSF_PSE_D'  and not ( CCLASS = 'SPSE' ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for session management -->
+  <configstore name="SESSION_MANAGEMENT" name_extended="" sci_id="">
+    <checkitem desc="Secure session handling" id="2.60.01b" operator="">
+      <compliant>NAME = 'SESSION_MANAGEMENT'  and VALUE = 'ACTIVE' </compliant>
+      <noncompliant>NAME = 'SESSION_MANAGEMENT'  and not ( VALUE = 'ACTIVE'  ) </noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for authorization profiles -->
+  <configstore name="AUTH_PROFILE_USER" name_extended="" sci_id="">
+    <checkitem desc="Create and document an authorization concept (user with profile SAP_ALL exists)" id="2.80.01b" not_found="positive" operator="">
+      <compliant>PROFILE = 'SAP_ALL' and USERNAME in ('DDIC','SAP*')  and STATUS = 'USER_IS_AUTHORIZED'</compliant>
+      <noncompliant>PROFILE = 'SAP_ALL' and USERNAME not in ('DDIC','SAP*') and  STATUS = 'USER_IS_AUTHORIZED'</noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for gw reginfo -->
+  <configstore name="GW_REGINFO" name_extended="" sci_id="">
+    <checkitem desc="RFC gateway hardening (reginfo content)" id="2.90.03b" operator="">
+      <compliant>line like '%' and ( TEXT like_regexpr 'HOST=[^*]' )</compliant>
+      <noncompliant> (line like '%' and TEXT like  '%HOST=[*]%' ) OR ( line like '%' and TEXT = 'P TP=*' )</noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Checks for gw prxyinfo -->
+  <configstore name="GW_PRXINFO" name_extended="" sci_id="">
+    <checkitem desc="RFC gateway hardening (prxyinfo content)" id="2.90.04b" operator="EXIST">
+      <compliant>line like '%' and text not like '' and ( text like  '%P SOURCE=local,internal%' or text like '%SOURCE=*%'  )</compliant>
+      <noncompliant>line like '%' and text not like '' and ( text like  '%P SOURCE=local,internal%' or text like '%SOURCE=*%'  )</noncompliant>
+    </checkitem>
+  </configstore>
+</targetsystem>

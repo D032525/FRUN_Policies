@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<targetsystem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" desc="SEC_HANA_HIGH+BASE" id="SEC_HANA_HIGH+BASE" multisql="Yes" version="0000" xsi:schemaLocation="csa_policy.xsd">
+  <configstore name="HDB_PARAMETER">
+    <checkitem desc="Ensure Password policy (force_first_password_change)" id="1.20.01a">
+      <compliant>name = 'force_first_password_change' and (LAYER like '%' and TENANT like '%' and SECT like '%' and ( value = 'true' ))</compliant>
+      <noncompliant>name = 'force_first_password_change'  and (LAYER like '%' and TENANT like '%' and SECT like '%' and not ( value = 'true' ))</noncompliant>
+    </checkitem>
+    <checkitem desc="Ensure Password policy (last_used_passwords)" id="1.20.01b">
+      <compliant>NAME = 'last_used_passwords' and (LAYER like '%' and TENANT like '%' and SECT like '%'  and ( VALUE &gt;= '15'))</compliant>
+      <noncompliant>NAME = 'last_used_passwords' and (LAYER like '%' and TENANT like '%' and SECT like '%' and (VALUE &lt;= '14'))</noncompliant>
+    </checkitem>
+    <checkitem desc="Ensure Password policy (maximum_invalid_connect_attempts)" id="1.20.01c">
+      <compliant>name = 'maximum_invalid_connect_attempts' and (LAYER like '%' and TENANT like '%' and SECT like '%' and ( VALUE &lt;= '6'))</compliant>
+      <noncompliant>name = 'maximum_invalid_connect_attempts' and (LAYER like '%' and TENANT like '%' and SECT like '%' and ( VALUE &gt; '6' ))</noncompliant>
+    </checkitem>
+    <checkitem desc="Ensure Password policy (maximum_password_lifetime)" id="1.20.01d">
+      <compliant>name = 'maximum_password_lifetime' and (LAYER like '%' and TENANT like '%' and SECT like '%'  and ( VALUE &lt;= '90'))</compliant>
+      <noncompliant>name = 'maximum_password_lifetime' and (LAYER like '%' and TENANT like '%' and SECT like '%' and ( VALUE &gt;= '91' ))</noncompliant>
+    </checkitem>
+    <checkitem desc="Ensure Password policy (maximum_unused_initial_password_lifetime)" id="1.20.01e">
+      <compliant>name like 'maximum_unused_init%al_password_lifetime' and LAYER like '%' and TENANT like '%' and SECT like '%' and VALUE &lt;= '7'</compliant>
+      <noncompliant>name like 'maximum_unused_init%al_password_lifetime' and LAYER like '%' and TENANT like '%' and SECT like '%' and VALUE &gt; '7'</noncompliant>
+    </checkitem>
+    <!--
+In SAP HANA 1.0 SPS 12 and earlier, this parameter was misspelled as maximum_unused_inital_password_lifetime. If this parameter had a user-specified value before upgrade, this value will be set as the value of the parameter maximum_unused_initial_password_lifetime. The misspelled parameter is unset and disappears from the custom configuration file.
+-->
+    <checkitem desc="Ensure Password policy (maximum_unused_productive_password_lifetime)" id="1.20.01f">
+      <compliant>name = 'maximum_unused_productive_password_lifetime' and (LAYER like '%' and TENANT like '%' and SECT like '%' and ( VALUE &lt;= '365'))</compliant>
+      <noncompliant>name = 'maximum_unused_productive_password_lifetime' and (LAYER like '%' and TENANT like '%' and SECT like '%' and ( VALUE &gt;= '366' ))</noncompliant>
+    </checkitem>
+    <checkitem desc="Ensure Password policy (minimal_password_length)" id="1.20.01g">
+      <compliant>name = 'minimal_password_length' and (LAYER like '%' and TENANT like '%' and SECT like '%'  and ( VALUE &gt;= '15'))</compliant>
+      <noncompliant>name = 'minimal_password_length' and (LAYER like '%' and TENANT like '%' and SECT like '%'  and ( VALUE &lt;= '14' ))</noncompliant>
+    </checkitem>
+    <checkitem desc="Ensure Password policy (minimum_password_lifetime)" id="1.20.01h">
+      <compliant>name = 'minimum_password_lifetime' and (LAYER like '%' and TENANT like '%' and SECT like '%'  and ( VALUE = '1'))</compliant>
+      <noncompliant>name = 'minimum_password_lifetime' and (LAYER like '%' and TENANT like '%' and SECT like '%'  and NOT ( VALUE = '1'))</noncompliant>
+    </checkitem>
+    <checkitem desc="Ensure Password policy (password_layout)" id="1.20.01i">
+      <compliant>name = 'password_layout' and (LAYER like '%' and TENANT like '%' and SECT like '%' and ( VALUE = 'A1a!'))</compliant>
+      <noncompliant>name = 'password_layout' and (LAYER like '%' and TENANT like '%' and SECT like '%' and NOT ( VALUE = 'A1a!' ))</noncompliant>
+    </checkitem>
+    <checkitem desc="Ensure Password policy (password_lock_time)" id="1.20.01j">
+      <compliant>name = 'password_lock_time' and (LAYER like '%' and TENANT like '%' and SECT like '%' and ( VALUE &gt;= '1440'))</compliant>
+      <noncompliant>name = 'password_lock_time' and (LAYER like '%' and TENANT like '%' and SECT like '%' and ( VALUE &lt;= '1439' ))</noncompliant>
+    </checkitem>
+  </configstore>
+  <configstore name="HDB_PARAMETER">
+    <!--
+  In SAP HANA 1.0 SPS 12 and earlier, this parameter was misspelled as maximum_unused_inital_password_lifetime. If this parameter had a user-specified value before upgrade, this value will be set as the value of the parameter maximum_unused_initial_password_lifetime. The misspelled parameter is unset and disappears from the custom configuration file.
+  -->
+    <checkitem desc="Configure TLS for SQL Communication (sslCryptoProvider)" id="2.10.01a">
+      <compliant>name = 'sslcryptoprovider' and ( VALUE = 'commoncrypto') and FILE_NAME = 'global.ini' and SECT = 'communication'</compliant>
+      <noncompliant>name = 'sslcryptoprovider' and not ( VALUE = 'commoncrypto' ) and FILE_NAME = 'global.ini' and SECT = 'communication'</noncompliant>
+    </checkitem>
+    <checkitem desc="Configure TLS for SQL Communication (sslMinProtocolVersion)" id="2.10.01b">
+      <compliant>name = 'sslminprotocolversion' and ( VALUE &lt;&gt; 'SSL30') and FILE_NAME = 'global.ini' and SECT = 'communication'</compliant>
+      <noncompliant>name = 'sslminprotocolversion' and ( VALUE = 'SSL30' ) and FILE_NAME = 'global.ini' and SECT = 'communication'</noncompliant>
+    </checkitem>
+    <checkitem desc="Configure TLS for SQL Communication (sslKeyStore)" id="2.10.01c">
+      <compliant>name = 'sslkeystore' and ( VALUE like_regexpr '.*pse' ) and FILE_NAME = 'global.ini' and SECT = 'communication'</compliant>
+      <noncompliant>name = 'sslkeystore' and not ( VALUE like_regexpr '.*pse' ) and FILE_NAME = 'global.ini' and SECT = 'communication'</noncompliant>
+    </checkitem>
+    <checkitem desc="Configure TLS for SQL Communication (sslTrustStore)" id="2.10.01d">
+      <compliant>name = 'ssltruststore' and ( VALUE like_regexpr '.*pse' ) and FILE_NAME = 'global.ini' and SECT = 'communication'</compliant>
+      <noncompliant>name = 'ssltruststore' and not ( VALUE like_regexpr '.*pse' ) and FILE_NAME = 'global.ini' and SECT = 'communication'</noncompliant>
+    </checkitem>
+    <checkitem desc="Configure TLS for SQL Communication (sslValidateCertificate)" id="2.10.01e">
+      <compliant>name = 'sslvalidatecertificate' and ( VALUE = 'false' ) and FILE_NAME = 'global.ini' and SECT = 'communication'</compliant>
+      <noncompliant>name = 'sslvalidatecertificate' and not ( VALUE = 'false' ) and FILE_NAME = 'global.ini' and SECT = 'communication'</noncompliant>
+    </checkitem>
+    <checkitem desc="Configure TLS for SQL Communication (sslCreateSelfSignedCertificate)" id="2.10.01f">
+      <compliant>name = 'sslcreateselfsignedcertificate' and ( VALUE = 'false' ) and FILE_NAME = 'global.ini' and SECT = 'communication'</compliant>
+      <noncompliant>name = 'sslcreateselfsignedcertificate' and not ( VALUE = 'false' ) and FILE_NAME = 'global.ini' and SECT = 'communication'</noncompliant>
+    </checkitem>
+    <checkitem desc="Configure TLS for SQL Communication (sslCipherSuites)" id="2.10.01g">
+      <compliant>name = 'sslciphersuites' and ( VALUE = 'PFS:HIGH::EC_HIGH:+EC_OPT' ) and FILE_NAME = 'global.ini' and SECT = 'communication'</compliant>
+      <noncompliant>name = 'sslciphersuites' and not ( VALUE = 'PFS:HIGH::EC_HIGH:+EC_OPT' ) and FILE_NAME = 'global.ini' and SECT = 'communication' </noncompliant>
+    </checkitem>
+    <checkitem desc="Session cookie lifetime (session_cookie_validity_time)" id="2.30.02a">
+      <compliant>name = 'session_cookie_validity_time' and ( VALUE &lt;= '180') </compliant>
+      <noncompliant>name = 'session_cookie_validity_time' and not ( VALUE &lt;= '180' ) </noncompliant>
+    </checkitem>
+  </configstore>
+</targetsystem>
