@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Author: I356345
+https://wiki.wdf.sap.corp/wiki/x/TIqwc
+02/07/2020: Initial Version
+-->
+<targetsystem desc="SEC_WD_HIGH+BASE" id="SEC_WD_HIGH+BASE" multisql="Yes" version="0000">
+  <!-- 
+    Security Level: BASELINE 
+-->
+  <!-- Check for Software Component Level -->
+  <configstore name="COMP_LEVEL" system_type="WEBDISP">
+    <checkitem desc="WebDisp Patch Level Required for SLES15" id="1.30.01a">
+      <compliant>
+        ( 
+            ( COMPONENT = 'WEBDISP' and VERSION = '7.89' and  ( lpad(SP,4,'0') &gt;= '0007' ) )
+                or
+            ( COMPONENT = 'WEBDISP' and VERSION = '7.85' and  ( lpad(SP,4,'0') &gt;= '0200' ) )
+        ) 
+      </compliant>
+      <noncompliant>
+        ( 
+          ( COMPONENT = 'WEBDISP' and VERSION = '7.89' and  ( lpad(SP,4,'0') &lt; '0007' ) )
+               or
+          ( COMPONENT = 'WEBDISP' and VERSION = '7.85' and  ( lpad(SP,4,'0') &lt; '0200' ) )
+               or
+          ( COMPONENT = 'WEBDISP' and VERSION &lt; '7.85')
+        )
+      </noncompliant>
+      <joinstore name="HOST_SOFTWARE_PACKAGES" no_data_found="Yes" sci_id="S00207" system_type="WEBDISP">
+        <joincompliant>SW_ID = 'sles-release' and SW_CAPTION like '%15%'</joincompliant>
+        <joinnoncompliant>SW_ID = 'sles-release' and SW_CAPTION like '%15%'</joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="WebDisp Patch Level Required for SLES12" id="1.30.01b">
+      <compliant>
+        ( COMPONENT = 'WEBDISP' and VERSION = '7.77' and  ( lpad(SP,4,'0') &gt;= '0510' ) )
+                  or
+        ( COMPONENT = 'WEBDISP' and VERSION = '7.85' and  ( lpad(SP,4,'0') &gt;= '0200' ) )
+     
+      </compliant>
+      <noncompliant>
+        ( COMPONENT = 'WEBDISP' and VERSION = '7.77' and  ( lpad(SP,4,'0') &lt; '0510' ) )
+                     or
+        ( COMPONENT = 'WEBDISP' and VERSION = '7.85' and  ( lpad(SP,4,'0') &lt; '0200' ) )
+                     or 
+        ( COMPONENT = 'WEBDISP' and VERSION = '7.81' )
+                     or
+        ( COMPONENT = 'WEBDISP' and VERSION = '7.89' )
+                     or
+        ( COMPONENT = 'WEBDISP' and VERSION &lt; '7.77' )
+      
+      </noncompliant>
+      <joinstore name="HOST_SOFTWARE_PACKAGES" no_data_found="Yes" sci_id="S00207" system_type="WEBDISP">
+        <joincompliant>SW_ID = 'sles-release' and SW_CAPTION like '%12%'</joincompliant>
+        <joinnoncompliant>SW_ID = 'sles-release' and SW_CAPTION like '%12%'</joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Patch your OS to minimum SLE12" id="1.30.01c">
+      <compliant>SW_ID = 'sles-release' and (lpad(left(SW_VERSION,2),4,'0') &gt;= '0012')</compliant>
+      <noncompliant>SW_ID = 'sles-release' and (lpad(left(SW_VERSION,2),4,'0') &lt; '0012')</noncompliant>
+      <joinstore name="HOST_SOFTWARE_PACKAGES" no_data_found="Yes" sci_id="S00207" system_type="WEBDISP">
+        <joincompliant>SW_ID = 'sles-release' and SW_CAPTION like '%11%'</joincompliant>
+        <joinnoncompliant>SW_ID = 'sles-release' and SW_CAPTION like '%11%'</joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="WebDisp Patch Level Required for Windows" id="1.30.01d">
+      <compliant>
+        ( 
+            ( COMPONENT = 'WEBDISP' and VERSION = '7.89' and  ( lpad(SP,4,'0') &gt;= '0007' ) )
+                or
+            ( COMPONENT = 'WEBDISP' and VERSION = '7.85' and  ( lpad(SP,4,'0') &gt;= '0200' ) )
+        ) 
+      </compliant>
+      <noncompliant>
+        ( 
+          ( COMPONENT = 'WEBDISP' and VERSION = '7.89' and  ( lpad(SP,4,'0') &lt; '0007' ) )
+               or
+          ( COMPONENT = 'WEBDISP' and VERSION = '7.85' and  ( lpad(SP,4,'0') &lt; '0200' ) )
+               or
+          ( COMPONENT = 'WEBDISP' and VERSION &lt; '7.85')
+        )
+      </noncompliant>
+      <joinstore name="SAP_ITSAMOperatingSystem" no_data_found="Yes" sci_id="S00166" system_type="WEBDISP">
+        <joincompliant>NAME = 'Name' and VALUE = 'WINNT'</joincompliant>
+        <joinnoncompliant>NAME = 'Name' and VALUE = 'WINNT'</joinnoncompliant>
+      </joinstore>
+    </checkitem>
+  </configstore>
+  <!-- Use secure authentication -->
+  <configstore name="INSTANCE_PROFILE" name_extended="" sci_id="S00143" system_type="WEBDISP">
+    <checkitem desc="Path and file name of the SAP Cryptographic Library" id="1.50.01a" operator="EXIST">
+      <compliant>NAME = 'ssl/ssl_lib'</compliant>
+      <noncompliant>NAME = 'ssl/ssl_lib'</noncompliant>
+    </checkitem>
+    <checkitem desc="ICM Parameter to set HTTPS Port" id="1.50.01b" operator="EXIST">
+      <compliant>NAME like 'icm/server_port_%' and VALUE like ('%PROT=HTTPS,'||'%PORT=8888%')</compliant>
+      <noncompliant>NAME like 'icm/server_port_%' and VALUE like ('%PROT=HTTP,'||'%PORT=8888%')</noncompliant>
+      <noncomplianttext>Admin Port 8888 should be set with HTTPS protocol</noncomplianttext>
+    </checkitem>
+    <checkitem desc="Web Administration Interface parameter" id="1.50.01c" operator="EXIST">
+      <compliant>NAME like 'icm/HTTP/admin%'</compliant>
+      <noncompliant>NAME like 'icm/HTTP/admin%'</noncompliant>
+    </checkitem>
+    <checkitem desc="Client Certificate Authentication Parameter" id="1.50.01d">
+      <compliant>NAME = 'icm/HTTPS/verify_client' and VALUE &gt;= '1'</compliant>
+      <noncompliant>NAME = 'icm/HTTPS/verify_client' and VALUE &lt; '1'</noncompliant>
+    </checkitem>
+  </configstore>
+  <!-- Password parameter checks 
+  <configstore name="DEFAULT.PFL.TABLE" name_extended="" sci_id="S00148" system_type="WEBDISP">
+  -->
+  <!--
+  <configstore name="INSTANCE_PROFILE" name_extended="" system_type="WEBDISP">
+    <checkitem desc="Configure a compliant password policy (login/min_password_lng)" id="1.10.01a">
+      <compliant>NAME = 'login/min_password_lng' and VALUE &gt;= '15' </compliant>
+      <noncompliant>NAME = 'login/min_password_lng' and not ( VALUE &gt;= '15' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_letters)" id="1.10.01b">
+      <compliant>NAME = 'login/min_password_letters' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_letters' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_digits)" id="1.10.01c">
+      <compliant>NAME = 'login/min_password_digits' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_digits' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_lowercase)" id="1.10.01d">
+      <compliant>NAME = 'login/min_password_lowercase' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_lowercase' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/min_password_uppercase)" id="1.10.01e">
+      <compliant>NAME = 'login/min_password_uppercase' and VALUE &gt;= '1' </compliant>
+      <noncompliant>NAME = 'login/min_password_uppercase' and not ( VALUE &gt;= '1' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_max_idle_productive)" id="1.10.01f">
+      <compliant>NAME = 'login/password_max_idle_productive' and VALUE = '90' </compliant>
+      <noncompliant>NAME = 'login/password_max_idle_productive' and not ( VALUE = '90' ) </noncompliant>
+    </checkitem>
+    <checkitem desc="Configure a compliant password policy (login/password_history_size)" id="1.10.01g">
+      <compliant>NAME = 'login/password_history_size' and VALUE &gt;= '15' </compliant>
+      <noncompliant>NAME = 'login/password_history_size' and not ( VALUE &gt;= '15' ) </noncompliant>
+    </checkitem>
+  </configstore>
+  -->
+  <!-- Secure access to SAP Management Console -->
+  <configstore name="DEFAULT.PFL.TABLE" name_extended="" sci_id="S00148" system_type="WEBDISP">
+    <checkitem desc="Parameter for Protection of the Web Methods" id="1.80.02a" not_found="negative">
+      <compliant>NAME like '%' and ((s0.name = 'service/protectedwebmethods' and s0.value like '%SDEFAULT%') or (s1.name = 'service/protectedwebmethods' and s1.value like '%SDEFAULT%')) and s0.name != s1.name </compliant>
+      <noncompliant/>
+      <joinstore name="INSTANCE_PROFILE" sci_id="S00143">
+        <joincompliant>NAME like '%'</joincompliant>
+        <joinnoncompliant/>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Parameter to authorize sapadm for system administration" id="1.80.02b" not_found="negative">
+      <compliant>NAME like '%' and ((s0.name = 'service/admin_users' and s0.value like '%sapadm%') or (s1.name = 'service/admin_users' and s1.value like '%sapadm%')) and s0.name != s1.name </compliant>
+      <noncompliant/>
+      <joinstore name="INSTANCE_PROFILE" sci_id="S00143">
+        <joincompliant>NAME like '%'</joincompliant>
+        <joinnoncompliant/>
+      </joinstore>
+    </checkitem>
+  </configstore>
+  <!-- 
+    Security level: HIGH
+-->
+  <configstore name="INSTANCE_PROFILE" name_extended="" sci_id="S00143" system_type="WEBDISP">
+    <!-- Network split for administrative protocols -->
+    <checkitem desc="Network filtering" id="2.10.01" operator="EXIST">
+      <compliant>NAME like '%icm/server_port_%' and VALUE like ('%PROT=HTTPS'||'%PORT=443%')</compliant>
+      <noncompliant>NAME like '%icm/server_port_%' and VALUE like ('%PROT=HTTPS'||'%PORT=443%')</noncompliant>
+    </checkitem>
+    <!-- Reduce attack surface area -->
+    <checkitem desc="Web administration interface" id="2.20.01" operator="NOT_EXIST">
+      <compliant>NAME like '%icm/HTTP/admin_%' and VALUE like '%ALLOWPUB = TRUE%'</compliant>
+      <noncompliant>NAME like '%icm/HTTP/admin_%' and VALUE like '%ALLOWPUB = TRUE%'</noncompliant>
+    </checkitem>
+    <!-- Enforcement of HTTPS -->
+    <checkitem desc="HTTP to HTTPS redirection" id="2.30.01a">
+      <compliant>NAME like '%icm/HTTP/redirect_%' and VALUE like '%PROT=https%'</compliant>
+      <noncompliant>NAME like '%icm/HTTP/redirect_%' and VALUE NOT like '%PROT=https%'</noncompliant>
+      <noncomplianttext>Parameter icm/HTTP/redirect_x is either not set or not redirected to HTTPS</noncomplianttext>
+      <joinstore name="INSTANCE_PROFILE" no_data_found="Yes" sci_id="S00143">
+        <joincompliant>NAME like 'icm/server_port_%' and VALUE like ('%PROT=HTTP,'||'%PORT=%')</joincompliant>
+        <joinnoncompliant>NAME like 'icm/server_port_%' and VALUE like ('%PROT=HTTP,'||'%PORT=%')</joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Encryption of requests with SSL" id="2.30.01b" operator="EXIST">
+      <compliant>(NAME = 'wdisp/ssl_encrypt' and VALUE &gt;= '1') or (NAME like 'wdisp/system_%' and VALUE like '%SSL_ENCRYPT=2%') or (NAME like 'wdisp/system_%' and VALUE like '%SSL_ENCRYPT=1%')</compliant>
+      <noncompliant>(NAME = 'wdisp/ssl_encrypt' and VALUE &gt;= '1') or (NAME like 'wdisp/system_%' and VALUE like '%SSL_ENCRYPT=2%') or (NAME like 'wdisp/system_%' and VALUE like '%SSL_ENCRYPT=1%')</noncompliant>
+    </checkitem>
+    <checkitem desc="Encryption of requests with SSL with redirection" id="2.30.01c">
+      <compliant>NAME like 'icm/HTTP/redirect_%' and ( VALUE like_regexpr '.*[Hh][Tt][Tt][Pp][Ss].*' )</compliant>
+      <noncompliant>NAME like 'icm/HTTP/redirect_%' and NOT ( VALUE like_regexpr '.*[Hh][Tt][Tt][Pp][Ss].*' )</noncompliant>
+      <joinstore name="INSTANCE_PROFILE" no_data_found="Yes" sci_id="S00143">
+        <joincompliant>(NAME = 'wdisp/ssl_encrypt' and VALUE = '1')</joincompliant>
+        <joinnoncompliant>(NAME = 'wdisp/ssl_encrypt' and VALUE = '1')</joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <checkitem desc="Encryption of requests with SSL with redirection" id="2.30.01d" no_data_found="Yes">
+      <compliant>NAME like 'icm/HTTP/redirect_%' and ( VALUE like_regexpr '.*[Hh][Tt][Tt][Pp][Ss].*' )</compliant>
+      <noncompliant>NAME like 'icm/HTTP/redirect_%' and NOT ( VALUE like_regexpr '.*[Hh][Tt][Tt][Pp][Ss].*' )</noncompliant>
+      <joinstore name="INSTANCE_PROFILE" no_data_found="Yes" sci_id="S00143">
+        <joincompliant>(NAME like 'wdisp/system_%' and VALUE like '%SSL_ENCRYPT=1%')</joincompliant>
+        <joinnoncompliant>(NAME like 'wdisp/system_%' and VALUE like '%SSL_ENCRYPT=1%')</joinnoncompliant>
+      </joinstore>
+    </checkitem>
+    <!-- Implement multiple lines of defense -->
+    <checkitem desc="URL filtering" id="2.40.01" operator="EXIST">
+      <compliant>NAME like '%icm/HTTP/auth_%' and VALUE like '%PERMFILE%'</compliant>
+      <noncompliant>NAME like '%icm/HTTP/auth_%' and VALUE like '%PERMFILE%'</noncompliant>
+    </checkitem>
+    <!--Enable logging for critical application events -->
+    <checkitem desc="Enable Http Logging" id="2.60.01">
+      <compliant>NAME like 'icm/HTTP/logging_%' and VALUE like ('%PREFIX='||'%LOGFILE=%')</compliant>
+      <noncompliant>NAME like 'icm/HTTP/logging_%' and VALUE NOT like ('%PREFIX='||'%LOGFILE=%')</noncompliant>
+      <noncomplianttext>icm/HTTP/logging_x parameter is not maintained</noncomplianttext>
+    </checkitem>
+    <!--Implement intense application server hardening -->
+    <checkitem desc="Show Detailed Errors" id="2.70.01a" operator="NOT_EXIST">
+      <compliant>NAME = 'is/HTTP/show_detailed_errors' and VALUE = 'TRUE'</compliant>
+      <noncompliant>NAME = 'is/HTTP/show_detailed_errors' and VALUE = 'TRUE'</noncompliant>
+    </checkitem>
+    <checkitem desc="Show Server Header" id="2.70.01b" operator="NOT_EXIST">
+      <compliant>NAME = 'is/HTTP/show_server_header' and VALUE = 'TRUE'</compliant>
+      <noncompliant>NAME = 'is/HTTP/show_server_header' and VALUE = 'TRUE'</noncompliant>
+    </checkitem>
+    <checkitem desc="Ciphersuites Parameter" id="2.70.01c">
+      <compliant>NAME = 'ssl/ciphersuites' and VALUE like '545%'</compliant>
+      <noncompliant>NAME = 'ssl/ciphersuites' and NOT VALUE like '545%'</noncompliant>
+    </checkitem>
+    <checkitem desc="Client Ciphersuites Parameter" id="2.70.01d">
+      <compliant>NAME = 'ssl/client_ciphersuites' and VALUE like '560%'</compliant>
+      <noncompliant>NAME = 'ssl/client_ciphersuites' and NOT VALUE like '560%'</noncompliant>
+    </checkitem>
+    <checkitem desc="Configure custom error page" id="2.70.02" operator="EXIST">
+      <compliant>NAME = 'icm/HTTP/error_templ_path'</compliant>
+      <noncompliant>NAME = 'icm/HTTP/error_templ_path'</noncompliant>
+    </checkitem>
+  </configstore>
+</targetsystem>
